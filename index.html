@@ -17,13 +17,13 @@
 </head>
 <body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col pb-24">
 
-    <!-- BARRA SUPERIOR MASTER FIXA (ALTERNADOR DE APPS) -->
+    <!-- BARRA SUPERIOR MASTER FIXA -->
     <header class="bg-slate-900 text-white sticky top-0 z-50 shadow-md">
         <div class="max-w-md mx-auto p-3 flex items-center justify-between border-b border-slate-800">
             <h1 class="text-base font-black flex items-center gap-2">
                 <span>🏥</span> MedHub Clínico
             </h1>
-            <span class="text-[10px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 px-2 py-0.5 rounded-full">v2.0 Unificado</span>
+            <span class="text-[10px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 px-2 py-0.5 rounded-full">v2.1 Completo</span>
         </div>
         
         <!-- SELETOR DAS 2 GRANDES ÁREAS -->
@@ -38,16 +38,16 @@
     </header>
 
     <!-- ========================================================================= -->
-    <!-- MÓDULO 1: CALCULADORAS MÉDICAS (TMA-1)                                   -->
+    <!-- MÓDULO 1: CALCULADORAS MÉDICAS                                           -->
     <!-- ========================================================================= -->
     <div id="app-calc" class="w-full flex-grow flex flex-col">
         <!-- Submenu horizontal das calculadoras -->
         <div class="bg-white border-b border-gray-200 shadow-sm sticky top-[89px] z-40">
             <div class="max-w-md mx-auto overflow-x-auto no-scrollbar flex gap-1.5 p-2">
                 <button onclick="switchTabCalc('tab-ob')" id="btn-sub-ob" class="sub-btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-teal-50 text-teal-800 border-2 border-teal-500/20">🤰 Obstetrícia</button>
+                <button onclick="switchTabCalc('tab-dieta')" id="btn-sub-dieta" class="sub-btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 border border-transparent">🥗 Dieta & IMC</button>
+                <button onclick="switchTabCalc('tab-escalas')" id="btn-sub-escalas" class="sub-btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 border border-transparent">🧠 Glasgow & Apgar</button>
                 <button onclick="switchTabCalc('tab-ped')" id="btn-sub-ped" class="sub-btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 border border-transparent">👶 Pediátrica</button>
-                <button onclick="switchTabCalc('tab-dieta')" id="btn-sub-dieta" class="sub-btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 border border-transparent">⚖️ IMC & Dieta</button>
-                <button onclick="switchTabCalc('tab-escalas')" id="btn-sub-escalas" class="sub-btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 border border-transparent">🧠 Escalas</button>
                 <button onclick="switchTabCalc('tab-insulina')" id="btn-sub-insulina" class="sub-btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 border border-transparent">🩸 Insulina/Álcool</button>
                 <button onclick="switchTabCalc('tab-labs')" id="btn-sub-labs" class="sub-btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 border border-transparent">📊 Laboratório</button>
                 <button onclick="switchTabCalc('tab-tumor')" id="btn-sub-tumor" class="sub-btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 border border-transparent">🎗️ Tumorais</button>
@@ -92,7 +92,175 @@
                 </div>
             </section>
 
-            <!-- 2. Pediátrica -->
+            <!-- 2. Dieta & IMC (COMPLETO) -->
+            <section id="tab-dieta" class="content-calc hidden space-y-4">
+                <div class="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-4">
+                    <h2 class="text-base font-extrabold text-teal-800 flex items-center gap-2">🥗 Planejador de Dieta, TMB & Macros</h2>
+                    
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Peso Atual (kg)</label>
+                            <input type="number" id="peso-dieta" step="0.1" value="85" placeholder="Ex: 85" oninput="calcularDieta()" class="w-full p-2.5 bg-gray-50 border rounded-xl font-bold text-center">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Altura (cm)</label>
+                            <input type="number" id="altura-dieta" step="1" value="175" placeholder="Ex: 175" oninput="calcularDieta()" class="w-full p-2.5 bg-gray-50 border rounded-xl font-bold text-center">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Idade (anos)</label>
+                            <input type="number" id="idade-dieta" value="40" placeholder="Ex: 40" oninput="calcularDieta()" class="w-full p-2.5 bg-gray-50 border rounded-xl font-bold text-center">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Sexo Biológico</label>
+                            <select id="sexo-dieta" onchange="calcularDieta()" class="w-full p-2.5 bg-gray-50 border rounded-xl font-bold">
+                                <option value="M">Masculino</option>
+                                <option value="F">Feminino</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Nível de Atividade</label>
+                        <select id="atividade-dieta" onchange="calcularDieta()" class="w-full p-2.5 bg-gray-50 border rounded-xl font-bold text-xs">
+                            <option value="1.2">Sedentário (Pouco ou nenhum exercício)</option>
+                            <option value="1.375">Leve (Exercício leve 1-3 dias/sem)</option>
+                            <option value="1.55">Moderado (Exercício mod. 3-5 dias/sem)</option>
+                            <option value="1.725">Intenso (Exercício pesado 6-7 dias/sem)</option>
+                        </select>
+                    </div>
+
+                    <!-- Caixa de Resultados da Dieta e IMC -->
+                    <div class="bg-emerald-50/60 p-4 rounded-2xl border border-emerald-200 space-y-3">
+                        <div class="grid grid-cols-2 gap-2 pb-2 border-b border-emerald-200">
+                            <div>
+                                <span class="block text-[10px] text-emerald-800 font-bold uppercase">IMC Atual</span>
+                                <span id="imc-val" class="text-lg font-black text-emerald-950">--</span>
+                                <span id="imc-class" class="block text-[10px] text-emerald-700 font-extrabold">--</span>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] text-emerald-800 font-bold uppercase">Peso Ideal Normal</span>
+                                <span id="peso-ideal-range" class="text-xs font-bold text-emerald-950 block">--</span>
+                                <span id="peso-ideal" class="text-[10px] text-gray-500 block">--</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-gray-700">Taxa Metabólica Basal (TMB):</span>
+                            <span id="tmb-kcal" class="text-sm font-black text-teal-900">0 kcal/dia</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-emerald-200 shadow-sm">
+                            <span class="text-xs font-extrabold text-rose-700">Meta p/ Emagrecer (Déficit -500):</span>
+                            <span id="emagrecer-kcal" class="text-base font-black text-rose-700">0 kcal/dia</span>
+                        </div>
+
+                        <!-- Distribuição de Macros -->
+                        <div class="pt-2">
+                            <span class="block text-[10px] font-black uppercase text-emerald-900 mb-1.5">Distribuição Sugerida de Macros (40% C / 30% P / 30% G)</span>
+                            <div class="grid grid-cols-3 gap-2 text-center text-[10px] font-extrabold text-white">
+                                <div class="bg-amber-700 p-2 rounded-xl"><span class="block text-amber-100 font-normal">🍗 Proteína</span><span id="macro-prot" class="text-xs">--g</span></div>
+                                <div class="bg-sky-700 p-2 rounded-xl"><span class="block text-sky-100 font-normal">🍞 Carbo</span><span id="macro-carb" class="text-xs">--g</span></div>
+                                <div class="bg-emerald-700 p-2 rounded-xl"><span class="block text-emerald-100 font-normal">🥑 Gordura</span><span id="macro-gord" class="text-xs">--g</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Escalas: Glasgow & Apgar (COMPLETO) -->
+            <section id="tab-escalas" class="content-calc hidden space-y-4">
+                <!-- Glasgow -->
+                <div class="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-3">
+                    <h2 class="text-base font-extrabold text-teal-800">🧠 Escala de Coma de Glasgow</h2>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Abertura Ocular</label>
+                        <select id="glasgow-ocular" onchange="calcGlasgow()" class="w-full p-2 bg-gray-50 border rounded-xl text-xs font-bold">
+                            <option value="4">4 - Abertura Espontânea</option>
+                            <option value="3">3 - À voz / Ao comando</option>
+                            <option value="2">2 - À dor / Estímulo pressórico</option>
+                            <option value="1">1 - Nenhuma</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Resposta Verbal</label>
+                        <select id="glasgow-verbal" onchange="calcGlasgow()" class="w-full p-2 bg-gray-50 border rounded-xl text-xs font-bold">
+                            <option value="5">5 - Orientado no tempo e espaço</option>
+                            <option value="4">4 - Confuso / Desorientado</option>
+                            <option value="3">3 - Palavras inapropriadas</option>
+                            <option value="2">2 - Sons incompreensíveis</option>
+                            <option value="1">1 - Nenhuma resposta</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Resposta Motora</label>
+                        <select id="glasgow-motor" onchange="calcGlasgow()" class="w-full p-2 bg-gray-50 border rounded-xl text-xs font-bold">
+                            <option value="6">6 - Obedece comandos verbais</option>
+                            <option value="5">5 - Localiza o estímulo doloroso</option>
+                            <option value="4">4 - Flexão normal (retirada inespecífica)</option>
+                            <option value="3">3 - Flexão anormal (decorticação)</option>
+                            <option value="2">2 - Extensão anormal (descerebração)</option>
+                            <option value="1">1 - Nenhuma resposta motora</option>
+                        </select>
+                    </div>
+                    <div class="bg-teal-50 p-3 rounded-2xl border border-teal-100 text-center">
+                        <span class="block text-2xl font-black text-teal-900" id="total-glasgow">15</span>
+                        <span class="text-xs font-bold text-teal-700" id="desc-glasgow">Normal / Trauma Leve</span>
+                    </div>
+                </div>
+
+                <!-- Apgar Completo -->
+                <div class="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-3">
+                    <h2 class="text-base font-extrabold text-indigo-900">👶 Escala de Apgar (Neonatal)</h2>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Frequência Cardíaca</label>
+                        <select id="apgar-fc" onchange="calcApgar()" class="w-full p-2 bg-gray-50 border rounded-xl text-xs font-bold">
+                            <option value="2">2 - Superior a 100 bpm</option>
+                            <option value="1">1 - Inferior a 100 bpm</option>
+                            <option value="0">0 - Ausente</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Esforço Respiratório</label>
+                        <select id="apgar-resp" onchange="calcApgar()" class="w-full p-2 bg-gray-50 border rounded-xl text-xs font-bold">
+                            <option value="2">2 - Choro vigoroso / Respiração regular</option>
+                            <option value="1">1 - Fraco / Irregular / Hipoventilação</option>
+                            <option value="0">0 - Ausente (Apneia)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Tônus Muscular</label>
+                        <select id="apgar-tonus" onchange="calcApgar()" class="w-full p-2 bg-gray-50 border rounded-xl text-xs font-bold">
+                            <option value="2">2 - Movimentação ativa / Boa flexão</option>
+                            <option value="1">1 - Alguma flexão de extremidades</option>
+                            <option value="0">0 - Flácido / Atonia total</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Irritabilidade Reflexa (Cateter/Estímulo)</label>
+                        <select id="apgar-ref" onchange="calcApgar()" class="w-full p-2 bg-gray-50 border rounded-xl text-xs font-bold">
+                            <option value="2">2 - Espirros / Tosse / Choro forte ao estímulo</option>
+                            <option value="1">1 - Careta / Movimento discreto</option>
+                            <option value="0">0 - Sem resposta</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Cor da Pele</label>
+                        <select id="apgar-cor" onchange="calcApgar()" class="w-full p-2 bg-gray-50 border rounded-xl text-xs font-bold">
+                            <option value="2">2 - Completamente rosado</option>
+                            <option value="1">1 - Corpo rosado, extremidades cianóticas (acrocianose)</option>
+                            <option value="0">0 - Pálido / Cianótico central total</option>
+                        </select>
+                    </div>
+                    <div class="bg-indigo-50 p-3 rounded-2xl border border-indigo-100 text-center">
+                        <span class="block text-2xl font-black text-indigo-900" id="total-apgar">10</span>
+                        <span class="text-xs font-bold text-indigo-700" id="desc-apgar">Adaptação excelente</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. Pediátrica -->
             <section id="tab-ped" class="content-calc hidden space-y-4">
                 <div class="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-4">
                     <h2 class="text-base font-extrabold text-teal-800">👶 Pediátrica & Neonatal</h2>
@@ -119,65 +287,6 @@
                                 <span>Gotejamento Etapa:</span><span id="ped-gts" class="text-orange-600">0 gts/min</span>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 3. Dieta & IMC -->
-            <section id="tab-dieta" class="content-calc hidden space-y-4">
-                <div class="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-4">
-                    <h2 class="text-base font-extrabold text-teal-800">⚖️ IMC, Peso Ideal & Dieta</h2>
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="number" id="peso-dieta" step="0.1" value="70" placeholder="Peso (kg)" oninput="calcularDieta()" class="p-2.5 bg-gray-50 border rounded-xl font-bold text-center">
-                        <input type="number" id="altura-dieta" step="0.01" value="1.70" placeholder="Altura (m)" oninput="calcularDieta()" class="p-2.5 bg-gray-50 border rounded-xl font-bold text-center">
-                        <input type="number" id="idade-dieta" value="30" placeholder="Idade" oninput="calcularDieta()" class="p-2.5 bg-gray-50 border rounded-xl font-bold text-center">
-                        <select id="sexo-dieta" onchange="calcularDieta()" class="p-2.5 bg-gray-50 border rounded-xl font-bold">
-                            <option value="m">Masc</option>
-                            <option value="f">Fem</option>
-                        </select>
-                    </div>
-                    <select id="atividade-dieta" onchange="calcularDieta()" class="w-full p-2.5 bg-gray-50 border rounded-xl font-bold text-xs">
-                        <option value="1.2">Sedentário</option>
-                        <option value="1.375">Leve (1-3d/sem)</option>
-                        <option value="1.55">Moderado (3-5d/sem)</option>
-                        <option value="1.725">Intenso (6-7d/sem)</option>
-                    </select>
-                    <div class="bg-teal-50 p-4 rounded-2xl border border-teal-100 text-xs space-y-1">
-                        <div class="flex justify-between font-bold"><span>IMC:</span><span id="imc-val" class="text-teal-900">--</span></div>
-                        <div class="flex justify-between font-bold"><span>Peso Ideal Médio:</span><span id="peso-ideal" class="text-teal-900">--</span></div>
-                        <div class="flex justify-between font-bold border-t border-teal-200 pt-1 text-emerald-800"><span>Meta Perda:</span><span id="perda-kcal">-- kcal/dia</span></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 4. Escalas -->
-            <section id="tab-escalas" class="content-calc hidden space-y-4">
-                <div class="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-3">
-                    <h2 class="text-base font-extrabold text-teal-800">🧠 Coma de Glasgow</h2>
-                    <select id="glasgow-ocular" onchange="calcGlasgow()" class="w-full p-2 bg-gray-50 border rounded-xl text-xs font-bold">
-                        <option value="4">4 - Abertura Espontânea</option>
-                        <option value="3">3 - À voz</option>
-                        <option value="2">2 - À dor</option>
-                        <option value="1">1 - Nenhuma</option>
-                    </select>
-                    <select id="glasgow-verbal" onchange="calcGlasgow()" class="w-full p-2 bg-gray-50 border rounded-xl text-xs font-bold">
-                        <option value="5">5 - Resposta Verbal Orientada</option>
-                        <option value="4">4 - Confuso</option>
-                        <option value="3">3 - Palavras inapropriadas</option>
-                        <option value="2">2 - Sons incompreensíveis</option>
-                        <option value="1">1 - Nenhuma</option>
-                    </select>
-                    <select id="glasgow-motor" onchange="calcGlasgow()" class="w-full p-2 bg-gray-50 border rounded-xl text-xs font-bold">
-                        <option value="6">6 - Obedece comandos</option>
-                        <option value="5">5 - Localiza dor</option>
-                        <option value="4">4 - Flexão normal</option>
-                        <option value="3">3 - Decorticação</option>
-                        <option value="2">2 - Descerebração</option>
-                        <option value="1">1 - Nenhuma</option>
-                    </select>
-                    <div class="bg-teal-50 p-3 rounded-2xl border border-teal-100 text-center">
-                        <span class="block text-2xl font-black text-teal-900" id="total-glasgow">15</span>
-                        <span class="text-xs font-bold text-teal-700" id="desc-glasgow">Normal / Leve</span>
                     </div>
                 </div>
             </section>
@@ -230,7 +339,7 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- MÓDULO 2: GUIA CLÍNICO, ANTÍDOTOS & FICHAS (TMA-2)                       -->
+    <!-- MÓDULO 2: GUIA CLÍNICO, ANTÍDOTOS & FICHAS                               -->
     <!-- ========================================================================= -->
     <div id="app-guia" class="w-full flex-grow flex flex-col hidden">
         <!-- Campo de busca inteligente do guia -->
@@ -364,7 +473,92 @@
             }
         }
 
-        // 2. PEDIÁTRICA
+        // 2. DIETA & IMC (COMPLETO)
+        function calcularDieta() {
+            const sexo = document.getElementById('sexo-dieta').value;
+            const peso = parseFloat(document.getElementById('peso-dieta').value) || 0;
+            const alturaCm = parseFloat(document.getElementById('altura-dieta').value) || 0;
+            const idade = parseInt(document.getElementById('idade-dieta').value) || 0;
+            const atividade = parseFloat(document.getElementById('atividade-dieta').value) || 1.2;
+
+            if (peso > 0 && alturaCm > 0 && idade > 0) {
+                const alturaM = alturaCm / 100;
+                const imc = peso / (alturaM * alturaM);
+                
+                let imcClass = "Abaixo do peso";
+                if (imc >= 18.5 && imc < 24.9) imcClass = "Normal";
+                else if (imc >= 25 && imc < 29.9) imcClass = "Sobrepeso";
+                else if (imc >= 30 && imc < 34.9) imcClass = "Obesidade I";
+                else if (imc >= 35 && imc < 39.9) imcClass = "Obesidade II";
+                else if (imc >= 40) imcClass = "Obesidade III";
+
+                document.getElementById('imc-val').innerText = imc.toFixed(1);
+                document.getElementById('imc-class').innerText = imcClass;
+
+                const minPeso = (18.5 * (alturaM * alturaM)).toFixed(1);
+                const maxPeso = (24.9 * (alturaM * alturaM)).toFixed(1);
+                const pesoMed = (((18.5 * (alturaM * alturaM)) + (24.9 * (alturaM * alturaM))) / 2).toFixed(1);
+
+                document.getElementById('peso-ideal-range').innerText = `${minPeso} a ${maxPeso} kg`;
+                document.getElementById('peso-ideal').innerText = `Média ideal: ${pesoMed} kg`;
+
+                // Harris-Benedict
+                let tmb;
+                if (sexo === 'M') {
+                    tmb = 66 + (13.7 * peso) + (5 * alturaCm) - (6.8 * idade);
+                } else {
+                    tmb = 655 + (9.6 * peso) + (1.8 * alturaCm) - (4.7 * idade);
+                }
+
+                const gastoTotal = tmb * atividade;
+                const deficit = gastoTotal - 500;
+
+                document.getElementById('tmb-kcal').innerText = Math.round(gastoTotal) + " kcal/dia";
+                document.getElementById('emagrecer-kcal').innerText = Math.round(deficit) + " kcal/dia";
+
+                // Macros: 30% Proteína, 40% Carboidratos, 30% Gorduras
+                const prot = (deficit * 0.3) / 4;
+                const carb = (deficit * 0.4) / 4;
+                const gord = (deficit * 0.3) / 9;
+
+                document.getElementById('macro-prot').innerText = Math.round(prot) + "g";
+                document.getElementById('macro-carb').innerText = Math.round(carb) + "g";
+                document.getElementById('macro-gord').innerText = Math.round(gord) + "g";
+            }
+        }
+
+        // 3. ESCALAS: GLASGOW & APGAR (COMPLETOS)
+        function calcGlasgow() {
+            const o = parseInt(document.getElementById('glasgow-ocular').value);
+            const v = parseInt(document.getElementById('glasgow-verbal').value);
+            const m = parseInt(document.getElementById('glasgow-motor').value);
+            const total = o + v + m;
+
+            let desc = "Normal / Trauma Leve";
+            if (total <= 8) desc = "Trauma Grave (Indicação de IOT)";
+            else if (total <= 12) desc = "Trauma Moderado";
+
+            document.getElementById('total-glasgow').innerText = total;
+            document.getElementById('desc-glasgow').innerText = desc;
+        }
+
+        function calcApgar() {
+            const fc = parseInt(document.getElementById('apgar-fc').value);
+            const re = parseInt(document.getElementById('apgar-resp').value);
+            const to = parseInt(document.getElementById('apgar-tonus').value);
+            const ir = parseInt(document.getElementById('apgar-ref').value);
+            const co = parseInt(document.getElementById('apgar-cor').value);
+            const total = fc + re + to + ir + co;
+
+            let desc = "Adaptação excelente";
+            if (total <= 3) desc = "Asfixia grave";
+            else if (total <= 6) desc = "Asfixia moderada";
+
+            document.getElementById('total-apgar').innerText = total;
+            document.getElementById('desc-apgar').innerText = desc;
+        }
+
+        // 4. PEDIÁTRICA
         function calcularPed() {
             const p = parseFloat(document.getElementById('peso-ped').value);
             if (!p || p <= 0) {
@@ -385,32 +579,6 @@
             document.getElementById('ped-sg').innerText = Math.round(vEtapa * 0.8) + " ml";
             document.getElementById('ped-sf').innerText = Math.round(vEtapa * 0.2) + " ml";
             document.getElementById('ped-gts').innerText = Math.round((vEtapa / 6) / 3) + " gts/min";
-        }
-
-        // 3. DIETA & IMC
-        function calcularDieta() {
-            const p = parseFloat(document.getElementById('peso-dieta').value) || 0;
-            const a = parseFloat(document.getElementById('altura-dieta').value) || 0;
-            const id = parseInt(document.getElementById('idade-dieta').value) || 0;
-            const sx = document.getElementById('sexo-dieta').value;
-            const at = parseFloat(document.getElementById('atividade-dieta').value) || 1.2;
-
-            if (p <= 0 || a <= 0) return;
-            const imc = p / (a * a);
-            document.getElementById('imc-val').innerText = imc.toFixed(1);
-            document.getElementById('peso-ideal').innerText = (((18.5 * (a*a)) + (24.9 * (a*a))) / 2).toFixed(1) + " kg";
-
-            let tmb = sx === 'm' ? 66 + (13.7 * p) + (5 * (a*100)) - (6.8 * id) : 655 + (9.6 * p) + (1.8 * (a*100)) - (4.7 * id);
-            document.getElementById('perda-kcal').innerText = Math.round((tmb * at) - 500);
-        }
-
-        // 4. ESCALAS
-        function calcGlasgow() {
-            const t = parseInt(document.getElementById('glasgow-ocular').value) +
-                      parseInt(document.getElementById('glasgow-verbal').value) +
-                      parseInt(document.getElementById('glasgow-motor').value);
-            document.getElementById('total-glasgow').innerText = t;
-            document.getElementById('desc-glasgow').innerText = t >= 13 ? "Trauma Leve" : (t >= 9 ? "Trauma Moderado" : "Trauma Grave (IOT)");
         }
 
         // 5. INSULINA
@@ -531,6 +699,7 @@
             renderGuia();
             calcularDieta();
             calcGlasgow();
+            calcApgar();
         });
     </script>
 </body>
