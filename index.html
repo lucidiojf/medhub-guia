@@ -494,7 +494,7 @@
         </main>
     </div>
 
-    <!-- MODAL DE DETALHES DO GUIA -->
+   <!-- MODAL DE DETALHES DO GUIA ATUALIZADO COM ENVIO DUPLO -->
     <div id="detailModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end justify-center sm:items-center p-0 sm:p-4">
         <div class="bg-white rounded-t-3xl sm:rounded-3xl max-w-md w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
             <div class="p-3.5 border-b border-gray-100 flex items-center justify-between bg-slate-50">
@@ -502,9 +502,14 @@
                 <button onclick="closeModal()" class="text-gray-400 hover:text-gray-700 text-lg font-bold p-1">✕</button>
             </div>
             <div class="p-4 overflow-y-auto space-y-3 text-xs leading-relaxed" id="modalBody"></div>
-            <div class="p-3 border-t bg-gray-50">
-                <button onclick="compartilharModal()" class="w-full py-3 bg-indigo-700 hover:bg-indigo-800 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5">
-                    <span>📤</span> Enviar Conduta ao Chat
+            
+            <!-- Botões de Envio e Cópia -->
+            <div class="p-3 border-t bg-gray-50 flex gap-2">
+                <button id="btnEnviarChat" onclick="compartilharModal()" class="flex-1 py-3 bg-indigo-700 hover:bg-indigo-800 active:scale-95 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm">
+                    <span id="lblEnviar">📤 Enviar ao Telegram</span>
+                </button>
+                <button onclick="copiarTextoModal()" title="Copiar para colar no chat" class="px-4 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition-all">
+                    📋 Copiar
                 </button>
             </div>
         </div>
@@ -964,18 +969,99 @@
             `).join('');
         }
 
-        // Modal
+       <!-- MODAL DE DETALHES DO GUIA -->
+    <div id="detailModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end justify-center sm:items-center p-0 sm:p-4">
+        <div class="bg-white rounded-t-3xl sm:rounded-3xl max-w-md w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
+            <div class="p-3.5 border-b border-gray-100 flex items-center justify-between bg-slate-50">
+                <span id="modalCategory" class="text-[10px] font-black uppercase text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full">--</span>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-700 text-lg font-bold p-1">✕</button>
+            </div>
+            <div class="p-4 overflow-y-auto space-y-3 text-xs leading-relaxed" id="modalBody"></div>
+            <div class="p-3 border-t bg-gray-50 flex gap-2">
+                <button id="btnEnviarChat" onclick="compartilharModal()" class="flex-1 py-3 bg-indigo-700 hover:bg-indigo-800 active:scale-95 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm">
+                    <span id="lblEnviar">📤 Enviar ao Telegram</span>
+                </button>
+                <button onclick="copiarTextoModal()" title="Copiar para colar no chat" class="px-4 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition-all">
+                    📋 Copiar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE EXECUÇÃO -->
+    <script>
         let modalText = "";
+
         function openModal(title, cat, body) {
             document.getElementById('modalCategory').innerText = cat;
             document.getElementById('modalBody').innerHTML = `<h3 class="text-sm font-black text-gray-900">${title}</h3><div class="text-gray-700 whitespace-pre-line mt-2">${body}</div>`;
             modalText = `📋 *${title}* (${cat})\n\n${body}`;
+            
+            const lbl = document.getElementById('lblEnviar');
+            if (lbl) lbl.innerText = "📤 Enviar ao Telegram";
+            const btn = document.getElementById('btnEnviarChat');
+            if (btn) btn.className = "flex-1 py-3 bg-indigo-700 hover:bg-indigo-800 active:scale-95 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm";
+            
             document.getElementById('detailModal').classList.remove('hidden');
         }
-        function closeModal() { document.getElementById('detailModal').classList.add('hidden'); }
+
+        function closeModal() { 
+            document.getElementById('detailModal').classList.add('hidden'); 
+        }
+
         function compartilharModal() {
-            if (tg) tg.sendData(modalText);
-            else alert("Dados prontos para envio:\n\n" + modalText);
+            if (!modalText) return;
+
+            let enviadoViaTg = false;
+
+            // 1. Tenta envio nativo do Telegram Web App
+            if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.sendData === 'function') {
+                try {
+                    const safeText = modalText.length > 3800 ? modalText.substring(0, 3800) + "\n...[texto truncado]" : modalText;
+                    window.Telegram.WebApp.sendData(safeText);
+                    enviadoViaTg = true;
+                } catch (e) {
+                    console.warn("sendData indisponível ou bloqueado por abertura via Menu Button:", e);
+                }
+            }
+
+            // 2. Garante cópia na área de transferência e aciona fallback de compartilhamento se sendData falhar
+            copiarTextoModal();
+
+            if (!enviadoViaTg) {
+                const tgShareUrl = `https://t.me/share/url?url=${encodeURIComponent(modalText)}`;
+                if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
+                    window.Telegram.WebApp.openTelegramLink(tgShareUrl);
+                } else {
+                    window.open(tgShareUrl, '_blank');
+                }
+            }
+        }
+
+        function copiarTextoModal() {
+            if (!modalText) return;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(modalText).then(() => {
+                    const lbl = document.getElementById('lblEnviar');
+                    if (lbl) lbl.innerText = "✅ Copiado / Encaminhando...";
+                }).catch(() => {
+                    fallbackCopiar(modalText);
+                });
+            } else {
+                fallbackCopiar(modalText);
+            }
+        }
+
+        function fallbackCopiar(texto) {
+            const temp = document.createElement("textarea");
+            temp.value = texto;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand("copy");
+            document.body.removeChild(temp);
+            const lbl = document.getElementById('lblEnviar');
+            if (lbl) lbl.innerText = "✅ Copiado!";
         }
 
         function filtrarGuia() {
@@ -994,5 +1080,3 @@
             calcularAlcool();
         });
     </script>
-</body>
-</html>
