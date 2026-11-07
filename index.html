@@ -2,883 +2,213 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedHub Clínico Total</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MedHub - Guia Clínico & Fichas</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Telegram Web App API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col pb-24">
+<body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col pb-16">
 
-    <!-- BARRA SUPERIOR MASTER FIXA -->
-    <header class="bg-slate-900 text-white sticky top-0 z-50 shadow-md">
-        <div class="max-w-md mx-auto p-3 flex items-center justify-between border-b border-slate-800">
-            <h1 class="text-base font-black flex items-center gap-2">
-                <span>🏥</span> MedHub Clínico
-            </h1>
-            <span class="text-[10px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 px-2 py-0.5 rounded-full">v4.1</span>
+    <!-- Topo Fixo com Busca Inteligente -->
+    <header class="bg-slate-900 text-white sticky top-0 z-50 p-3 shadow-md">
+        <div class="max-w-md mx-auto flex items-center justify-between mb-2">
+            <h1 class="text-sm font-black flex items-center gap-1.5"><span>📖</span> MedHub Guia Clínico</h1>
+            <span class="text-[10px] bg-indigo-900 border border-indigo-700 px-2 py-0.5 rounded-full font-bold">TMA-2</span>
         </div>
-        
-        <!-- SELETOR DAS 2 GRANDES ÁREAS -->
-        <div class="max-w-md mx-auto grid grid-cols-2 p-1.5 gap-1 bg-slate-950">
-            <button onclick="alternarApp('app-calc')" id="btn-master-calc" class="py-2 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 bg-teal-600 text-white shadow">
-                🧮 Calculadoras Médicas
-            </button>
-            <button onclick="alternarApp('app-guia')" id="btn-master-guia" class="py-2 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 text-gray-400 hover:text-white">
-                📖 Guia, Fichas & Condutas
-            </button>
+        <div class="max-w-md mx-auto">
+            <input type="text" id="globalSearch" onkeyup="filtrarConteudo()" placeholder="🔍 Pesquisar em todo o guia (ex: Atropina, IAM, Asma)..." class="w-full py-2 px-3 bg-slate-800 text-white placeholder-gray-400 text-xs rounded-xl border border-slate-700 focus:outline-none focus:bg-white focus:text-gray-900 transition-all font-medium">
         </div>
     </header>
 
-    <!-- ========================================================================= -->
-    <!-- MÓDULO 1: CALCULADORAS MÉDICAS                                           -->
-    <!-- ========================================================================= -->
-    <div id="app-calc" class="w-full flex-grow flex flex-col">
-        <!-- Submenu horizontal das calculadoras -->
-        <div class="bg-white border-b border-gray-200 shadow-sm sticky top-[89px] z-40">
-            <div class="max-w-md mx-auto overflow-x-auto no-scrollbar flex gap-1.5 p-2">
-                <button onclick="switchTabCalc('tab-ob')" id="btn-sub-ob" class="sub-btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-teal-50 text-teal-800 border-2 border-teal-500/20">🤰 Obstetrícia</button>
-                <button onclick="switchTabCalc('tab-dieta')" id="btn-sub-dieta" class="sub-btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 border border-transparent">🥗 Dieta & IMC</button>
-                <button onclick="switchTabCalc('tab-escalas')" id="btn-sub-escalas" class="sub-btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 border border-transparent">🧠 Glasgow & Apgar</button>
-                <button onclick="switchTabCalc('tab-lipidio')" id="btn-sub-lipidio" class="sub-btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 border border-transparent">🧪 Perfil Lipídico</button>
-                <button onclick="switchTabCalc('tab-ped')" id="btn-sub-ped" class="sub-btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 border border-transparent">👶 Pediátrica & Neo</button>
-                <button onclick="switchTabCalc('tab-alcool')" id="btn-sub-alcool" class="sub-btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 border border-transparent">🍺 Alcoolemia</button>
-                <button onclick="switchTabCalc('tab-insulina')" id="btn-sub-insulina" class="sub-btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 border border-transparent">🩸 Insulina (PSZO)</button>
-                <button onclick="switchTabCalc('tab-labs')" id="btn-sub-labs" class="sub-btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 border border-transparent">📊 Laboratório</button>
-                <button onclick="switchTabCalc('tab-tumor')" id="btn-sub-tumor" class="sub-btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 border border-transparent">🎗️ Tumorais</button>
-            </div>
+    <!-- Submenu Horizontal de Categorias -->
+    <nav class="bg-white border-b border-gray-200 sticky top-[85px] z-40 shadow-sm">
+        <div class="max-w-md mx-auto overflow-x-auto no-scrollbar flex gap-1.5 p-2">
+            <button onclick="mudarTabGuia('tab-fichas')" id="btn-fichas" class="btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border-2 border-rose-500/20">☣️ Fichas Tox (45)</button>
+            <button onclick="mudarTabGuia('tab-antidotos')" id="btn-antidotos" class="btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 border border-transparent">💉 Antídotos (15)</button>
+            <button onclick="mudarTabGuia('tab-peconha')" id="btn-peconha" class="btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 border border-transparent">🐍 Peçonhentos</button>
+            <button onclick="mudarTabGuia('tab-dmhas')" id="btn-dmhas" class="btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 border border-transparent">🫀 DM & HAS</button>
+            <button onclick="mudarTabGuia('tab-presc')" id="btn-presc" class="btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 border border-transparent">📋 Prescrições (25)</button>
         </div>
+    </nav>
 
-        <main class="max-w-md mx-auto w-full p-4 space-y-4 flex-grow">
-            
-            <!-- 1. OBSTETRÍCIA -->
-            <section id="tab-ob" class="content-calc space-y-4">
-                <div class="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-4">
-                    <h2 class="text-base font-extrabold text-teal-800 flex items-center gap-2">🤰 Obstetrícia Pro <span class="text-[10px] font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full">DUM x USG</span></h2>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">🗓️ Data da Última Menstruação (DUM)</label>
-                        <input type="date" id="dum" onchange="calcularOb()" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-teal-500 outline-none font-bold">
-                    </div>
-                    <div class="p-3.5 bg-teal-50/50 rounded-2xl border border-teal-100 space-y-3">
-                        <span class="text-xs font-bold text-teal-800 uppercase tracking-wider block">Conciliar com Ultrassom (USG)</span>
-                        <input type="date" id="data_usg" onchange="calcularOb()" class="w-full p-2 bg-white border border-gray-200 rounded-xl font-bold">
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="number" id="sem_usg" placeholder="Semanas no Laudo" oninput="calcularOb()" class="w-full p-2 bg-white border border-gray-200 rounded-xl text-center font-bold">
-                            <input type="number" id="dias_usg" min="0" max="6" placeholder="Dias (0 a 6)" oninput="calcularOb()" class="w-full p-2 bg-white border border-gray-200 rounded-xl text-center font-bold">
-                        </div>
-                    </div>
-                    <div id="resultado-ob" class="hidden space-y-3 pt-2">
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="bg-teal-50/50 p-3 rounded-2xl border border-teal-100">
-                                <span class="block text-[9px] text-teal-700 font-bold uppercase">IG por DUM</span>
-                                <span id="ig-dum-txt" class="text-base font-black text-teal-900">--</span>
-                            </div>
-                            <div class="bg-cyan-50/50 p-3 rounded-2xl border border-cyan-100">
-                                <span class="block text-[9px] text-cyan-700 font-bold uppercase">IG por USG</span>
-                                <span id="ig-usg-txt" class="text-base font-black text-cyan-900">--</span>
-                            </div>
-                        </div>
-                        <div class="bg-gray-900 p-4 rounded-2xl text-white">
-                            <span class="block text-[9px] font-bold uppercase tracking-widest text-teal-400">Data Provável do Parto (DPP)</span>
-                            <span id="dpp-txt" class="text-2xl font-black">--/--/----</span>
-                            <span id="info-dpp" class="block text-[10px] text-gray-400 italic mt-0.5">--</span>
-                        </div>
-                        <div id="alerta-divergencia" class="p-2.5 rounded-xl text-xs font-bold text-center hidden"></div>
-                    </div>
-                </div>
-            </section>
+    <!-- Conteúdo Principal -->
+    <main class="max-w-md mx-auto w-full p-4 space-y-3 flex-grow">
 
-            <!-- 2. DIETA & IMC -->
-            <section id="tab-dieta" class="content-calc hidden space-y-4">
-                <div class="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-4">
-                    <h2 class="text-base font-extrabold text-teal-800 flex items-center gap-2">🥗 Planejador de Dieta, TMB & Macros</h2>
-                    <div class="grid grid-cols-2 gap-2.5">
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Peso Atual (kg)</label>
-                            <input type="number" id="peso-dieta" step="0.1" value="85" placeholder="Ex: 85" oninput="calcularDieta()" class="w-full p-2.5 bg-gray-50 border rounded-xl font-bold text-center">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Altura (cm)</label>
-                            <input type="number" id="altura-dieta" step="1" value="175" placeholder="Ex: 175" oninput="calcularDieta()" class="w-full p-2.5 bg-gray-50 border rounded-xl font-bold text-center">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2.5">
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Idade (anos)</label>
-                            <input type="number" id="idade-dieta" value="40" placeholder="Ex: 40" oninput="calcularDieta()" class="w-full p-2.5 bg-gray-50 border rounded-xl font-bold text-center">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Sexo Biológico</label>
-                            <select id="sexo-dieta" onchange="calcularDieta()" class="w-full p-2.5 bg-gray-50 border rounded-xl font-bold">
-                                <option value="M">Masculino</option>
-                                <option value="F">Feminino</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Nível de Atividade Física</label>
-                        <select id="atividade-dieta" onchange="calcularDieta()" class="w-full p-2.5 bg-gray-50 border rounded-xl font-bold text-xs">
-                            <option value="1.2">Sedentário (Pouco ou nenhum exercício)</option>
-                            <option value="1.375">Leve (Exercício leve 1-3 dias/sem)</option>
-                            <option value="1.55">Moderado (Exercício mod. 3-5 dias/sem)</option>
-                            <option value="1.725">Intenso (Exercício pesado 6-7 dias/sem)</option>
-                        </select>
-                    </div>
-                    <div class="bg-emerald-50/70 p-4 rounded-2xl border border-emerald-200 space-y-3">
-                        <div class="grid grid-cols-2 gap-2 pb-2 border-b border-emerald-200">
-                            <div>
-                                <span class="block text-[10px] text-emerald-800 font-bold uppercase">IMC Atual</span>
-                                <span id="imc-val" class="text-lg font-black text-emerald-950">--</span>
-                                <span id="imc-class" class="block text-[10px] text-emerald-700 font-extrabold">--</span>
-                            </div>
-                            <div>
-                                <span class="block text-[10px] text-emerald-800 font-bold uppercase">Faixa de Peso Normal</span>
-                                <span id="peso-ideal-range" class="text-xs font-bold text-emerald-950 block">--</span>
-                                <span id="peso-ideal" class="text-[10px] text-gray-500 block">--</span>
-                            </div>
-                        </div>
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="font-bold text-gray-700">Taxa Metabólica Total (TMB):</span>
-                            <span id="tmb-kcal" class="font-black text-teal-900 text-sm">0 kcal/dia</span>
-                        </div>
-                        <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-emerald-200 shadow-sm">
-                            <span class="text-xs font-extrabold text-rose-700">Meta p/ Emagrecer (Déficit -500):</span>
-                            <span id="emagrecer-kcal" class="text-base font-black text-rose-700">0 kcal/dia</span>
-                        </div>
-                        <div class="pt-2">
-                            <span class="block text-[10px] font-black uppercase text-emerald-900 mb-1.5">Distribuição Sugerida de Macros (30% P / 40% C / 30% G)</span>
-                            <div class="grid grid-cols-3 gap-2 text-center text-[10px] font-extrabold text-white">
-                                <div class="bg-amber-700 p-2 rounded-xl"><span class="block text-amber-100 font-normal">🍗 Prot</span><span id="macro-prot" class="text-xs">--g</span></div>
-                                <div class="bg-sky-700 p-2 rounded-xl"><span class="block text-sky-100 font-normal">🍞 Carb</span><span id="macro-carb" class="text-xs">--g</span></div>
-                                <div class="bg-emerald-700 p-2 rounded-xl"><span class="block text-emerald-100 font-normal">🥑 Gord</span><span id="macro-gord" class="text-xs">--g</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+        <!-- 1. FICHAS TOXICOLÓGICAS (CIATOX / IJF) -->
+        <section id="tab-fichas" class="tab-guia-sec space-y-3">
+            <div class="text-[11px] font-black uppercase text-rose-900 tracking-wider px-1">Fichas Toxicológicas Clássicas (CIATox / IJF)</div>
+            <div id="lista-fichas" class="space-y-3"></div>
+        </section>
 
-            <!-- 3. GLASGOW & APGAR -->
-            <section id="tab-escalas" class="content-calc hidden space-y-4">
-                <div class="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-3">
-                    <h2 class="text-base font-extrabold text-teal-800 flex items-center gap-2">🧠 Escala de Coma de Glasgow</h2>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Abertura Ocular</label>
-                        <select id="glasgow-ocular" onchange="calcGlasgow()" class="w-full p-2 bg-gray-50 border rounded-xl text-xs font-bold">
-                            <option value="4">4 - Espontânea</option>
-                            <option value="3">3 - À voz / Ao comando</option>
-                            <option value="2">2 - À dor / Estímulo pressórico</option>
-                            <option value="1">1 - Nenhuma</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Resposta Verbal</label>
-                        <select id="glasgow-verbal" onchange="calcGlasgow()" class="w-full p-2 bg-gray-50 border rounded-xl text-xs font-bold">
-                            <option value="5">5 - Orientado no tempo e espaço</option>
-                            <option value="4">4 - Confuso / Desorientado</option>
-                            <option value="3">3 - Palavras inapropriadas</option>
-                            <option value="2">2 - Sons incompreensíveis</option>
-                            <option value="1">1 - Nenhuma resposta</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Resposta Motora</label>
-                        <select id="glasgow-motor" onchange="calcGlasgow()" class="w-full p-2 bg-gray-50 border rounded-xl text-xs font-bold">
-                            <option value="6">6 - Obedece comandos verbais</option>
-                            <option value="5">5 - Localiza dor</option>
-                            <option value="4">4 - Flexão normal (retirada)</option>
-                            <option value="3">3 - Flexão anormal (decorticação)</option>
-                            <option value="2">2 - Extensão (descerebração)</option>
-                            <option value="1">1 - Nenhuma resposta motora</option>
-                        </select>
-                    </div>
-                    <div class="bg-teal-50 p-3.5 rounded-2xl border border-teal-100 text-center">
-                        <span class="block text-2xl font-black text-teal-900" id="total-glasgow">15</span>
-                        <span class="text-xs font-bold text-teal-700" id="desc-glasgow">Normal / Trauma Leve</span>
-                    </div>
-                </div>
+        <!-- 2. ANTÍDOTOS (TODOS OS 15) -->
+        <section id="tab-antidotos" class="tab-guia-sec hidden space-y-3">
+            <div class="text-[11px] font-black uppercase text-emerald-900 tracking-wider px-1">Antídotos & Posologias de Emergência</div>
+            <div id="lista-antidotos" class="space-y-3"></div>
+        </section>
 
-                <div class="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-3">
-                    <h2 class="text-base font-extrabold text-indigo-900 flex items-center gap-2">👶 Escala de Apgar (Avaliação Neonatal)</h2>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">1. Frequência Cardíaca</label>
-                        <select id="apgar-fc" onchange="calcApgar()" class="w-full p-2 bg-gray-50 border rounded-xl text-xs font-bold">
-                            <option value="2">2 - &gt; 100 bpm</option>
-                            <option value="1">1 - &lt; 100 bpm</option>
-                            <option value="0">0 - Ausente</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">2. Esforço Respiratório</label>
-                        <select id="apgar-resp" onchange="calcApgar()" class="w-full p-2 bg-gray-50 border rounded-xl text-xs font-bold">
-                            <option value="2">2 - Choro forte / Respiração regular</option>
-                            <option value="1">1 - Fraco / Irregular / Hipoventilação</option>
-                            <option value="0">0 - Ausente (Apneia)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">3. Tônus Muscular</label>
-                        <select id="apgar-tonus" onchange="calcApgar()" class="w-full p-2 bg-gray-50 border rounded-xl text-xs font-bold">
-                            <option value="2">2 - Movimentação ativa / Boa flexão</option>
-                            <option value="1">1 - Alguma flexão de extremidades</option>
-                            <option value="0">0 - Flácido / Atonia total</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">4. Irritabilidade Reflexa</label>
-                        <select id="apgar-ref" onchange="calcApgar()" class="w-full p-2 bg-gray-50 border rounded-xl text-xs font-bold">
-                            <option value="2">2 - Espirros / Tosse / Choro vigoroso</option>
-                            <option value="1">1 - Careta / Movimento discreto</option>
-                            <option value="0">0 - Sem resposta</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">5. Cor da Pele</label>
-                        <select id="apgar-cor" onchange="calcApgar()" class="w-full p-2 bg-gray-50 border rounded-xl text-xs font-bold">
-                            <option value="2">2 - Completamente rosado</option>
-                            <option value="1">1 - Corpo rosado, extremidades cianóticas (acrocianose)</option>
-                            <option value="0">0 - Pálido / Cianótico total</option>
-                        </select>
-                    </div>
-                    <div class="bg-indigo-50 p-3.5 rounded-2xl border border-indigo-100 text-center">
-                        <span class="block text-2xl font-black text-indigo-900" id="total-apgar">10</span>
-                        <span class="text-xs font-bold text-indigo-700" id="desc-apgar">Adaptação excelente</span>
-                    </div>
-                </div>
-            </section>
+        <!-- 3. ANIMAIS PEÇONHENTOS & SERPENTES -->
+        <section id="tab-peconha" class="tab-guia-sec hidden space-y-3">
+            <div class="text-[11px] font-black uppercase text-amber-900 tracking-wider px-1">Serpentes e Animais Peçonhentos</div>
+            <div id="lista-peconha" class="space-y-3"></div>
+        </section>
 
-            <!-- 4. PERFIL LIPÍDICO -->
-            <section id="tab-lipidio" class="content-calc hidden space-y-4">
-                <div class="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-4">
-                    <h2 class="text-base font-extrabold text-purple-900 flex items-center gap-2">🧪 Perfil Lipídico & Castelli</h2>
-                    <div class="space-y-2.5">
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase">Colesterol Total (mg/dL)</label>
-                            <input type="number" id="lip-colTotal" placeholder="Ex: 210" oninput="calcularLipidios()" class="w-full p-2.5 bg-gray-50 border rounded-xl font-bold text-center">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase">Colesterol HDL (mg/dL)</label>
-                            <input type="number" id="lip-hdl" placeholder="Ex: 45" oninput="calcularLipidios()" class="w-full p-2.5 bg-gray-50 border rounded-xl font-bold text-center">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase">Triglicerídeos (mg/dL)</label>
-                            <input type="number" id="lip-trig" placeholder="Ex: 150" oninput="calcularLipidios()" class="w-full p-2.5 bg-gray-50 border rounded-xl font-bold text-center">
-                        </div>
-                    </div>
-                    <div id="res-lipidio-box" class="bg-purple-50/70 p-4 rounded-2xl border border-purple-200 space-y-2 text-xs">
-                        <div class="flex justify-between font-bold text-gray-700 border-b border-purple-200 pb-1.5">
-                            <span>LDL (Friedewald):</span><span id="lip-ldl" class="text-purple-950 font-black text-sm">-- mg/dL</span>
-                        </div>
-                        <div class="flex justify-between"><span>Colesterol Não-HDL:</span><span id="lip-naohdl" class="font-bold text-purple-900">-- mg/dL</span></div>
-                        <div class="flex justify-between"><span>Colesterol VLDL:</span><span id="lip-vldl" class="font-bold text-purple-900">-- mg/dL</span></div>
-                        <div class="flex justify-between"><span>Índice Castelli I (CT / HDL):</span><span id="lip-c1" class="font-bold text-purple-900">--</span></div>
-                        <div class="flex justify-between"><span>Índice Castelli II (LDL / HDL):</span><span id="lip-c2" class="font-bold text-purple-900">--</span></div>
-                        <div class="flex justify-between"><span>Relação TG / HDL:</span><span id="lip-tghdl" class="font-bold text-purple-900">--</span></div>
-                    </div>
-                </div>
-            </section>
+        <!-- 4. DIRETRIZES DE HAS & DM -->
+        <section id="tab-dmhas" class="tab-guia-sec hidden space-y-3">
+            <div class="text-[11px] font-black uppercase text-purple-900 tracking-wider px-1">Diretrizes Ambulatoriais e Doses (DM & HAS)</div>
+            <div id="lista-dmhas" class="space-y-3"></div>
+        </section>
 
-            <!-- 5. PEDIÁTRICA & NEONATAL (COM HIPOGLICEMIA) -->
-            <section id="tab-ped" class="content-calc hidden space-y-4">
-                <div class="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-4">
-                    <h2 class="text-base font-extrabold text-teal-800">👶 Pediátrica & Neonatal</h2>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">PESO DO PACIENTE (Kg)</label>
-                        <input type="number" id="peso-ped" step="0.1" placeholder="0.0" oninput="calcularPed()" class="w-full p-3 bg-gray-50 border-2 border-teal-500/30 text-teal-900 text-2xl font-black rounded-2xl text-center focus:ring-2 focus:ring-teal-500 outline-none">
-                    </div>
-                    <div id="calculos-ped-resultado" class="hidden space-y-3">
-                        <!-- Prematuros -->
-                        <div class="border-t-4 border-indigo-600 bg-indigo-50/30 p-3.5 rounded-2xl border border-indigo-100 space-y-1 text-xs">
-                            <span class="font-bold text-indigo-900 block">1. Hidratação de Prematuros</span>
-                            <div class="flex justify-between"><span>SG a 15% (P * 60):</span><span class="font-bold" id="pre-sg15">0 ml</span></div>
-                            <div class="flex justify-between"><span>Glicose a 50% (P * 6):</span><span class="font-bold" id="pre-gli50">0 ml</span></div>
-                            <div class="flex justify-between"><span>NaCl a 20% (P * 0,6):</span><span class="font-bold" id="pre-nacl">0 ml</span></div>
-                            <div class="flex justify-between"><span>KCl a 19,1% (P * 0,6):</span><span class="font-bold" id="pre-kcl-pre">0 ml</span></div>
-                            <div class="flex justify-between"><span>Gluconato Cálcio 10% (P * 1):</span><span class="font-bold" id="pre-ca-pre">0 ml</span></div>
-                            <div class="flex justify-between border-t border-indigo-100 pt-1 font-bold text-indigo-900">
-                                <span>Gotejamento (SG15% / 75):</span><span id="pre-gts" class="text-orange-600">0 gts/min</span>
-                            </div>
-                            <div class="flex justify-between font-bold text-indigo-900">
-                                <span>Microgotas (Gts * 3):</span><span id="pre-mcgts" class="text-orange-600">0 mcgts/min</span>
-                            </div>
-                        </div>
+        <!-- 5. PRESCRIÇÕES HOSPITALARES & PEDIATRIA (25 PROTOCOLOS) -->
+        <section id="tab-presc" class="tab-guia-sec hidden space-y-3">
+            <div class="text-[11px] font-black uppercase text-blue-900 tracking-wider px-1">Manual de Prescrições e Protocolos Hospitalares</div>
+            <div id="lista-presc" class="space-y-3"></div>
+        </section>
 
-                        <!-- Hipoglicemia Neonatal -->
-                        <div class="border-t-4 border-rose-600 bg-rose-50/30 p-3.5 rounded-2xl border border-rose-100 space-y-1.5 text-xs">
-                            <span class="font-bold text-rose-900 block">2. Hipoglicemia Neonatal</span>
-                            <span class="text-[10px] uppercase font-black text-rose-700 block">Ataque (2ml Gli50% + 8ml ABD)</span>
-                            <div class="flex justify-between"><span>Fazer Volume (P * 2):</span><span class="font-black text-rose-700" id="hipo-ataque">0 ml</span></div>
-                            <span class="text-[10px] uppercase font-black text-rose-700 block pt-1 border-t border-rose-100">Manutenção (12 horas)</span>
-                            <div class="flex justify-between"><span>SG 5% (P * 5 * 60 / 50 * 12):</span><span class="font-bold" id="hipo-man">0 ml</span></div>
-                            <div class="flex justify-between font-black text-rose-900"><span>Vazão (Anterior / 12):</span><span id="hipo-vazao" class="text-rose-700">0 ml/h</span></div>
-                        </div>
+    </main>
 
-                        <!-- Holliday -->
-                        <div class="border-t-4 border-emerald-600 bg-emerald-50/30 p-3.5 rounded-2xl border border-emerald-100 space-y-1 text-xs">
-                            <span class="font-bold text-emerald-900 block">3. Hidratação Pediátrica (Holliday - Fase 6h)</span>
-                            <div class="flex justify-between"><span>Volume por Etapa (6h):</span><span class="font-bold" id="ped-etapa">0 ml</span></div>
-                            <div class="flex justify-between"><span>SG 5% (80%):</span><span class="font-bold" id="ped-sg">0 ml</span></div>
-                            <div class="flex justify-between"><span>SF 0.9% (20%):</span><span class="font-bold" id="ped-sf">0 ml</span></div>
-                            <div class="flex justify-between"><span>KCl 10% (Máx 2ml):</span><span class="font-bold text-emerald-700" id="ped-kcl">0 ml</span></div>
-                            <div class="flex justify-between"><span>Gluconato Ca 10% (Máx 2ml):</span><span class="font-bold text-emerald-700" id="ped-ca">0 ml</span></div>
-                            <div class="flex justify-between border-t border-emerald-100 pt-1 font-bold text-emerald-900">
-                                <span>Gotejamento Etapa:</span><span id="ped-gts" class="text-orange-600">0 gts/min</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 6. CALCULADORA DE USO DE ÁLCOOL (WIDMARK) -->
-            <section id="tab-alcool" class="content-calc hidden space-y-4">
-                <div class="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-3">
-                    <h2 class="text-base font-extrabold text-amber-900 flex items-center gap-2">🍺 Calculadora de Uso de Álcool (Widmark)</h2>
-                    
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase">Tipo de Bebida</label>
-                            <select id="tipoBebida" onchange="preenchePercent()" class="w-full p-2 bg-gray-50 border rounded-xl font-bold text-xs">
-                                <option value="">Selecione...</option>
-                                <option value="cerveja" selected>Cerveja</option>
-                                <option value="vinho">Vinho</option>
-                                <option value="destilado">Destilado</option>
-                                <option value="outro">Outro</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase">% Álcool (v/v)</label>
-                            <input type="number" id="percentAlcool" step="0.1" value="5" oninput="calcularAlcool()" class="w-full p-2 bg-gray-50 border rounded-xl text-center font-bold">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase">Quantidade ml</label>
-                            <input type="number" id="quantidadeMl" step="10" value="350" oninput="calcularAlcool()" class="w-full p-2 bg-gray-50 border rounded-xl text-center font-bold">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase">Qtde dose</label>
-                            <input type="number" id="qtdeDose" step="1" value="1" oninput="calcularAlcool()" class="w-full p-2 bg-gray-50 border rounded-xl text-center font-bold">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-2">
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase">Peso (kg)</label>
-                            <input type="number" id="pesoAlcool" step="0.1" value="70" oninput="calcularAlcool()" class="w-full p-2 bg-gray-50 border rounded-xl text-center font-bold">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase">Sexo</label>
-                            <select id="sexoAlcool" onchange="calcularAlcool()" class="w-full p-2 bg-gray-50 border rounded-xl font-bold text-xs">
-                                <option value="M">Masc</option>
-                                <option value="F">Fem</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase">Horas decorridas</label>
-                            <input type="number" id="tempoAlcool" step="0.1" value="0" oninput="calcularAlcool()" class="w-full p-2 bg-gray-50 border rounded-xl text-center font-bold">
-                        </div>
-                    </div>
-
-                    <div id="saidaAlcool" class="bg-amber-50/70 p-4 rounded-2xl border border-amber-200 space-y-1.5 text-xs">
-                        <div class="flex justify-between"><span>Qtde consumida:</span><span id="alc-consumida" class="font-bold">350.0 mL</span></div>
-                        <div class="flex justify-between"><span>Álcool em gramas:</span><span id="alc-grs" class="font-bold">14.0 g</span></div>
-                        <div class="flex justify-between"><span>Unid de Álcool (10 g):</span><span id="alc-unid" class="font-bold">1.4 unidades</span></div>
-                        <div class="flex justify-between"><span>TX alcoolemia inicial:</span><span id="alc-bacinicial" class="font-bold">0.29 g/L</span></div>
-                        <div class="flex justify-between border-t border-amber-200 pt-1 font-bold text-gray-800">
-                            <span>TX alcoolemia estimada atual:</span><span id="alc-bacatual" class="text-sm font-black">0.29 g/L</span>
-                        </div>
-                        <div id="alc-classe" class="p-2 rounded-xl text-[11px] font-bold text-center mt-2"></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 7. INSULINA -->
-            <section id="tab-insulina" class="content-calc hidden space-y-4">
-                <div class="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-3">
-                    <h2 class="text-base font-extrabold text-teal-800">🩸 Escalonamento Insulina (PSZO)</h2>
-                    <div class="grid grid-cols-2 gap-2 text-xs">
-                        <label>Glicemia Café: <input type="number" id="glic-cafe" value="160" oninput="calcularInsulina()" class="w-full p-1.5 border rounded-lg font-bold text-center mt-1"></label>
-                        <label>Glicemia Almoço: <input type="number" id="glic-almoco" value="180" oninput="calcularInsulina()" class="w-full p-1.5 border rounded-lg font-bold text-center mt-1"></label>
-                    </div>
-                    <div id="resultado-ins" class="text-xs space-y-1 bg-gray-50 p-3 rounded-2xl border">
-                        <div class="flex justify-between font-bold"><span>Regular Café:</span><span id="bol-cafe" class="text-teal-800">--</span></div>
-                        <div class="flex justify-between font-bold"><span>Regular Almoço:</span><span id="bol-almoco" class="text-teal-800">--</span></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 8. LABORATÓRIO -->
-            <section id="tab-labs" class="content-calc hidden space-y-4">
-                <div class="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-3">
-                    <h2 class="text-base font-extrabold text-teal-800">📊 Análise Laboratorial Rápida</h2>
-                    <div class="flex gap-2">
-                        <input type="number" step="0.1" id="in-hb" placeholder="Hemoglobina (g/dL)" oninput="analisarLabRapido()" class="w-full p-2 border rounded-xl text-xs font-bold text-center">
-                        <input type="number" id="in-glic" placeholder="Glicemia Jejum" oninput="analisarLabRapido()" class="w-full p-2 border rounded-xl text-xs font-bold text-center">
-                    </div>
-                    <div id="res-lab-rapido" class="text-xs p-3 bg-gray-50 rounded-2xl border space-y-1">
-                        <div>Hb: <span id="st-hb" class="font-bold text-gray-500">Aguardando</span></div>
-                        <div>Glicemia: <span id="st-glic" class="font-bold text-gray-500">Aguardando</span></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 9. TUMORAIS -->
-            <section id="tab-tumor" class="content-calc hidden space-y-4">
-                <div class="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-3">
-                    <h2 class="text-base font-extrabold text-teal-800">🎗️ Marcadores Tumorais</h2>
-                    <select id="select-tumor" onchange="analisarTumoral()" class="w-full p-2 bg-gray-50 border rounded-xl text-xs font-bold">
-                        <option value="AFP">AFP (&lt; 15 ng/mL - Fígado)</option>
-                        <option value="CEA">CEA (&lt; 5 µg/L - Cólon/Mama)</option>
-                        <option value="CA125">CA 125 (&lt; 35 U/mL - Ovário)</option>
-                        <option value="PSA">PSA (&lt; 4 µg/L - Próstata)</option>
-                    </select>
-                    <input type="number" id="valor-tumor" step="0.1" placeholder="Valor Encontrado" oninput="analisarTumoral()" class="w-full p-2 bg-gray-50 border rounded-xl text-center font-bold">
-                    <div id="res-tumor" class="text-xs p-3 rounded-2xl border text-center font-bold hidden"></div>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <!-- ========================================================================= -->
-    <!-- MÓDULO 2: GUIA CLÍNICO, ANTÍDOTOS, PRESCRIÇÕES, FICHAS & DM/HAS          -->
-    <!-- ========================================================================= -->
-    <div id="app-guia" class="w-full flex-grow flex flex-col hidden">
-        <!-- Campo de busca inteligente do guia -->
-        <div class="bg-slate-900 p-3 sticky top-[89px] z-40 shadow-sm">
-            <div class="max-w-md mx-auto">
-                <input type="text" id="globalSearch" onkeyup="filtrarGuia()" placeholder="🔍 Buscar antídoto, ficha tox, conduta, remédio..." class="w-full py-2.5 px-4 bg-slate-800 text-white placeholder-gray-400 text-xs rounded-xl border border-slate-700 focus:outline-none focus:bg-white focus:text-gray-900 transition-all">
-            </div>
-            <!-- Submenu do guia (Sem Manipulados) -->
-            <div class="max-w-md mx-auto overflow-x-auto no-scrollbar flex gap-1.5 pt-2">
-                <button onclick="switchTabGuia('tab-fichas')" id="btn-guia-fichas" class="sub-btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border-2 border-rose-500/20">☣️ Fichas Tox (45)</button>
-                <button onclick="switchTabGuia('tab-antidotos')" id="btn-guia-antidotos" class="sub-btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-400 hover:bg-slate-800 border border-transparent">💉 Antídotos (15)</button>
-                <button onclick="switchTabGuia('tab-peconha')" id="btn-guia-peconha" class="sub-btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-400 hover:bg-slate-800 border border-transparent">🐍 Peçonhentos</button>
-                <button onclick="switchTabGuia('tab-dmhas')" id="btn-guia-dmhas" class="sub-btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-400 hover:bg-slate-800 border border-transparent">🫀 DM & HAS</button>
-                <button onclick="switchTabGuia('tab-prescricoes')" id="btn-guia-prescricoes" class="sub-btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-400 hover:bg-slate-800 border border-transparent">📋 Prescrições (25)</button>
-            </div>
-        </div>
-
-        <main class="max-w-md mx-auto w-full p-4 space-y-3 flex-grow">
-            <!-- 1. Fichas Toxicológicas (CATÁLOGO COMPLETO) -->
-            <section id="tab-fichas" class="content-guia space-y-3">
-                <div class="text-xs font-bold text-rose-900 uppercase tracking-wider px-1">Fichas Toxicológicas CIATox / IJF (Todas as Fichas)</div>
-                <div id="lista-fichas" class="space-y-3"></div>
-            </section>
-            <!-- 2. Antídotos (TODOS OS 15) -->
-            <section id="tab-antidotos" class="content-guia hidden space-y-3">
-                <div class="text-xs font-bold text-emerald-900 uppercase tracking-wider px-1">Tabela de Antídotos & Apresentações (IJF)</div>
-                <div id="lista-antidotos" class="space-y-3"></div>
-            </section>
-            <!-- 3. Peçonhentos -->
-            <section id="tab-peconha" class="content-guia hidden space-y-3">
-                <div class="text-xs font-bold text-amber-900 uppercase tracking-wider px-1">Serpentes e Animais Peçonhentos</div>
-                <div id="lista-peconha" class="space-y-3"></div>
-            </section>
-            <!-- 4. DM & HAS (GUIA CLÍNICO COMPLETO COM ACCORDIONS) -->
-            <section id="tab-dmhas" class="content-guia hidden space-y-3">
-                <div class="text-xs font-bold text-purple-900 uppercase tracking-wider px-1">Diretrizes Clínicas Ambulatoriais - DM & HAS</div>
-                <div id="lista-dmhas" class="space-y-3"></div>
-            </section>
-            <!-- 5. Prescrições (25 Protocolos) -->
-            <section id="tab-prescricoes" class="content-guia hidden space-y-3">
-                <div class="text-xs font-bold text-blue-900 uppercase tracking-wider px-1">Manual de Prescrições & Protocolos Hospitalares</div>
-                <div id="lista-prescricoes" class="space-y-3"></div>
-            </section>
-        </main>
-    </div>
-
-   <!-- MODAL DE DETALHES DO GUIA ATUALIZADO COM ENVIO DUPLO -->
+    <!-- MODAL DE LEITURA E ENCAMINHAMENTO -->
     <div id="detailModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end justify-center sm:items-center p-0 sm:p-4">
-        <div class="bg-white rounded-t-3xl sm:rounded-3xl max-w-md w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
+        <div class="bg-white rounded-t-3xl sm:rounded-3xl max-w-md w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-200">
             <div class="p-3.5 border-b border-gray-100 flex items-center justify-between bg-slate-50">
                 <span id="modalCategory" class="text-[10px] font-black uppercase text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full">--</span>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-700 text-lg font-bold p-1">✕</button>
+                <button onclick="fecharModal()" class="text-gray-400 hover:text-gray-700 text-lg font-bold p-1">✕</button>
             </div>
             <div class="p-4 overflow-y-auto space-y-3 text-xs leading-relaxed" id="modalBody"></div>
-            
-            <!-- Botões de Envio e Cópia -->
             <div class="p-3 border-t bg-gray-50 flex gap-2">
-                <button id="btnEnviarChat" onclick="compartilharModal()" class="flex-1 py-3 bg-indigo-700 hover:bg-indigo-800 active:scale-95 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm">
-                    <span id="lblEnviar">📤 Enviar ao Telegram</span>
+                <button id="btnEnviar" onclick="enviarCondutaChat()" class="flex-1 py-3 bg-indigo-700 hover:bg-indigo-800 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow">
+                    <span>📤</span> Enviar ao Telegram
                 </button>
-                <button onclick="copiarTextoModal()" title="Copiar para colar no chat" class="px-4 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition-all">
+                <button onclick="copiarConduta()" class="px-4 py-3 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-bold">
                     📋 Copiar
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPT DE EXECUÇÃO -->
+    <!-- SCRIPT DE DADOS E NAVEGAÇÃO -->
     <script>
         const tg = window.Telegram ? window.Telegram.WebApp : null;
-        if (tg) {
-            tg.ready();
-            tg.expand();
-        }
+        if (tg) { tg.ready(); tg.expand(); }
 
-        // Alternador Master
-        function alternarApp(appId) {
-            document.getElementById('app-calc').classList.add('hidden');
-            document.getElementById('app-guia').classList.add('hidden');
+        let textoModalAtivo = "";
 
-            document.getElementById('btn-master-calc').className = "py-2 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 text-gray-400 hover:text-white";
-            document.getElementById('btn-master-guia').className = "py-2 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 text-gray-400 hover:text-white";
-
-            document.getElementById(appId).classList.remove('hidden');
-
-            if (appId === 'app-calc') {
-                document.getElementById('btn-master-calc').className = "py-2 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 bg-teal-600 text-white shadow";
-            } else {
-                document.getElementById('btn-master-guia').className = "py-2 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 bg-indigo-600 text-white shadow";
-            }
-        }
-
-        // Sub-abas de Calculadoras
-        function switchTabCalc(tabId) {
-            document.querySelectorAll('.content-calc').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.sub-btn-calc').forEach(btn => {
-                btn.className = "sub-btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 border border-transparent";
+        // Troca de Abas
+        function mudarTabGuia(id) {
+            document.querySelectorAll('.tab-guia-sec').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.btn-guia').forEach(btn => {
+                btn.className = "btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 border border-transparent";
             });
-            document.getElementById(tabId).classList.remove('hidden');
-            const target = document.getElementById(tabId.replace('tab-', 'btn-sub-'));
-            if (target) target.className = "sub-btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-teal-50 text-teal-800 border-2 border-teal-500/20";
+            document.getElementById(id).classList.remove('hidden');
+            const target = document.getElementById(id.replace('tab-', 'btn-'));
+            if (target) target.className = "btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border-2 border-rose-500/20";
         }
 
-        // Sub-abas do Guia
-        function switchTabGuia(tabId) {
-            document.querySelectorAll('.content-guia').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.sub-btn-guia').forEach(btn => {
-                btn.className = "sub-btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-400 hover:bg-slate-800 border border-transparent";
-            });
-            document.getElementById(tabId).classList.remove('hidden');
-            const target = document.getElementById(tabId.replace('tab-', 'btn-guia-'));
-            if (target) target.className = "sub-btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border-2 border-rose-500/20";
-        }
-
-        // 1. OBSTETRÍCIA
-        function calcularOb() {
-            const dumVal = document.getElementById('dum').value;
-            const dataUsgVal = document.getElementById('data_usg').value;
-            const semUsg = parseInt(document.getElementById('sem_usg').value) || 0;
-            const diasUsg = parseInt(document.getElementById('dias_usg').value) || 0;
-            const hoje = new Date(); hoje.setHours(0,0,0,0);
-
-            if (!dumVal && !dataUsgVal) {
-                document.getElementById('resultado-ob').classList.add('hidden');
-                return;
-            }
-            document.getElementById('resultado-ob').classList.remove('hidden');
-
-            if (dumVal) {
-                const dum = new Date(dumVal); dum.setHours(0,0,0,0);
-                const diasTotais = Math.floor((hoje - dum) / 86400000);
-                document.getElementById('ig-dum-txt').innerText = `${Math.floor(diasTotais/7)}s ${diasTotais%7}d`;
-                let dpp = new Date(dum); dpp.setDate(dpp.getDate() + 280);
-                document.getElementById('dpp-txt').innerText = dpp.toLocaleDateString('pt-BR');
-                document.getElementById('info-dpp').innerText = "Baseada na DUM";
-            }
-            if (dataUsgVal) {
-                const dusg = new Date(dataUsgVal); dusg.setHours(0,0,0,0);
-                const diasTotais = (semUsg * 7) + diasUsg + Math.floor((hoje - dusg) / 86400000);
-                document.getElementById('ig-usg-txt').innerText = `${Math.floor(diasTotais/7)}s ${diasTotais%7}d`;
-            }
-        }
-
-        // 2. DIETA & IMC
-        function calcularDieta() {
-            const sexo = document.getElementById('sexo-dieta').value;
-            const peso = parseFloat(document.getElementById('peso-dieta').value) || 0;
-            const alturaCm = parseFloat(document.getElementById('altura-dieta').value) || 0;
-            const idade = parseInt(document.getElementById('idade-dieta').value) || 0;
-            const atividade = parseFloat(document.getElementById('atividade-dieta').value) || 1.2;
-
-            if (peso > 0 && alturaCm > 0 && idade > 0) {
-                const alturaM = alturaCm / 100;
-                const imc = peso / (alturaM * alturaM);
-                
-                let imcClass = "Abaixo do peso";
-                if (imc >= 18.5 && imc < 24.9) imcClass = "Normal";
-                else if (imc >= 25 && imc < 29.9) imcClass = "Sobrepeso";
-                else if (imc >= 30 && imc < 34.9) imcClass = "Obesidade I";
-                else if (imc >= 35 && imc < 39.9) imcClass = "Obesidade II";
-                else if (imc >= 40) imcClass = "Obesidade III";
-
-                document.getElementById('imc-val').innerText = imc.toFixed(1);
-                document.getElementById('imc-class').innerText = imcClass;
-
-                const minPeso = (18.5 * (alturaM * alturaM)).toFixed(1);
-                const maxPeso = (24.9 * (alturaM * alturaM)).toFixed(1);
-                const pesoMed = (((18.5 * (alturaM * alturaM)) + (24.9 * (alturaM * alturaM))) / 2).toFixed(1);
-
-                document.getElementById('peso-ideal-range').innerText = `${minPeso} a ${maxPeso} kg`;
-                document.getElementById('peso-ideal').innerText = `Média: ${pesoMed} kg`;
-
-                let tmb;
-                if (sexo === 'M') {
-                    tmb = 66 + (13.7 * peso) + (5 * alturaCm) - (6.8 * idade);
-                } else {
-                    tmb = 655 + (9.6 * peso) + (1.8 * alturaCm) - (4.7 * idade);
-                }
-
-                const gastoTotal = tmb * atividade;
-                const deficit = gastoTotal - 500;
-
-                document.getElementById('tmb-kcal').innerText = Math.round(gastoTotal) + " kcal/dia";
-                document.getElementById('emagrecer-kcal').innerText = Math.round(deficit) + " kcal/dia";
-
-                const prot = (deficit * 0.3) / 4;
-                const carb = (deficit * 0.4) / 4;
-                const gord = (deficit * 0.3) / 9;
-
-                document.getElementById('macro-prot').innerText = Math.round(prot) + "g";
-                document.getElementById('macro-carb').innerText = Math.round(carb) + "g";
-                document.getElementById('macro-gord').innerText = Math.round(gord) + "g";
-            }
-        }
-
-        // 3. GLASGOW & APGAR
-        function calcGlasgow() {
-            const o = parseInt(document.getElementById('glasgow-ocular').value);
-            const v = parseInt(document.getElementById('glasgow-verbal').value);
-            const m = parseInt(document.getElementById('glasgow-motor').value);
-            const total = o + v + m;
-
-            let desc = "Normal / Trauma Leve";
-            if (total <= 8) desc = "Trauma Grave (Indicação de IOT)";
-            else if (total <= 12) desc = "Trauma Moderado";
-
-            document.getElementById('total-glasgow').innerText = total;
-            document.getElementById('desc-glasgow').innerText = desc;
-        }
-
-        function calcApgar() {
-            const fc = parseInt(document.getElementById('apgar-fc').value);
-            const re = parseInt(document.getElementById('apgar-resp').value);
-            const to = parseInt(document.getElementById('apgar-tonus').value);
-            const ir = parseInt(document.getElementById('apgar-ref').value);
-            const co = parseInt(document.getElementById('apgar-cor').value);
-            const total = fc + re + to + ir + co;
-
-            let desc = "Adaptação excelente";
-            if (total <= 3) desc = "Asfixia grave";
-            else if (total <= 6) desc = "Asfixia moderada";
-
-            document.getElementById('total-apgar').innerText = total;
-            document.getElementById('desc-apgar').innerText = desc;
-        }
-
-        // 4. PERFIL LIPÍDICO
-        function calcularLipidios() {
-            const ct = parseFloat(document.getElementById('lip-colTotal').value);
-            const hdl = parseFloat(document.getElementById('lip-hdl').value);
-            const tg = parseFloat(document.getElementById('lip-trig').value);
-
-            if (ct > 0 && hdl > 0 && tg > 0) {
-                const ldl = ct - hdl - (tg / 5);
-                const naoHdl = ct - hdl;
-                const vldl = tg / 5;
-                const c1 = ct / hdl;
-                const c2 = ldl / hdl;
-                const tghdl = tg / hdl;
-
-                document.getElementById('lip-ldl').innerText = ldl.toFixed(1) + " mg/dL";
-                document.getElementById('lip-naohdl').innerText = naoHdl.toFixed(1) + " mg/dL";
-                document.getElementById('lip-vldl').innerText = vldl.toFixed(1) + " mg/dL";
-                document.getElementById('lip-c1').innerText = c1.toFixed(2);
-                document.getElementById('lip-c2').innerText = c2.toFixed(2);
-                document.getElementById('lip-tghdl').innerText = tghdl.toFixed(2);
-            }
-        }
-
-        // 5. PEDIÁTRICA & NEONATAL (COM HIPOGLICEMIA)
-        function calcularPed() {
-            const p = parseFloat(document.getElementById('peso-ped').value);
-            if (!p || p <= 0) {
-                document.getElementById('calculos-ped-resultado').classList.add('hidden');
-                return;
-            }
-            document.getElementById('calculos-ped-resultado').classList.remove('hidden');
-
-            // Prematuros
-            const sgPrem = p * 60;
-            const gtsPrem = sgPrem / 75;
-            document.getElementById('pre-sg15').innerText = sgPrem.toFixed(1) + " ml";
-            document.getElementById('pre-gli50').innerText = (p * 6).toFixed(1) + " ml";
-            document.getElementById('pre-nacl').innerText = (p * 0.6).toFixed(2) + " ml";
-            document.getElementById('pre-kcl-pre').innerText = (p * 0.6).toFixed(2) + " ml";
-            document.getElementById('pre-ca-pre').innerText = (p * 1).toFixed(1) + " ml";
-            document.getElementById('pre-gts').innerText = gtsPrem.toFixed(1) + " gts/min";
-            document.getElementById('pre-mcgts').innerText = (gtsPrem * 3).toFixed(1) + " mcgts/min";
-
-            // Hipoglicemia Neonatal
-            const hipoAtaque = p * 2;
-            const hipoMan = (p * 5 * 60 / 50) * 12;
-            const hipoVazao = hipoMan / 12;
-            document.getElementById('hipo-ataque').innerText = hipoAtaque.toFixed(1) + " ml";
-            document.getElementById('hipo-man').innerText = Math.round(hipoMan) + " ml";
-            document.getElementById('hipo-vazao').innerText = hipoVazao.toFixed(1) + " ml/h";
-
-            // Holliday
-            let v24h = p <= 10 ? p * 100 : (p <= 20 ? 1000 + ((p - 10) * 50) : 1500 + ((p - 20) * 20));
-            const vEtapa = v24h / 4;
-            document.getElementById('ped-etapa').innerText = Math.round(vEtapa) + " ml";
-            document.getElementById('ped-sg').innerText = Math.round(vEtapa * 0.8) + " ml";
-            document.getElementById('ped-sf').innerText = Math.round(vEtapa * 0.2) + " ml";
-            let pedKcl = Math.min(2.0, (vEtapa / 100) * 1.5);
-            let pedCa = p <= 10 ? (p * 0.275) : 2.0;
-            document.getElementById('ped-kcl').innerText = pedKcl.toFixed(1) + " ml";
-            document.getElementById('ped-ca').innerText = pedCa.toFixed(1) + " ml";
-            document.getElementById('ped-gts').innerText = Math.round((vEtapa / 6) / 3) + " gts/min";
-        }
-
-        // 6. ÁLCOOL (WIDMARK)
-        function preenchePercent() {
-            const tipo = document.getElementById('tipoBebida').value;
-            const campo = document.getElementById('percentAlcool');
-            if (tipo === 'cerveja') campo.value = 5;
-            else if (tipo === 'vinho') campo.value = 12;
-            else if (tipo === 'destilado') campo.value = 40;
-            calcularAlcool();
-        }
-
-        function calcularAlcool() {
-            const percent = parseFloat(document.getElementById('percentAlcool').value || 0);
-            const quantidadeMl = parseFloat(document.getElementById('quantidadeMl').value || 0);
-            const qtdeDose = parseFloat(document.getElementById('qtdeDose').value || 1);
-            const peso = parseFloat(document.getElementById('pesoAlcool').value || 0);
-            const sexo = document.getElementById('sexoAlcool').value;
-            const tempo = parseFloat(document.getElementById('tempoAlcool').value || 0);
-
-            if (!percent || !quantidadeMl || !peso) return;
-
-            const qtdeConsumida = quantidadeMl * qtdeDose;
-            const alcoolGrs = qtdeConsumida * (percent / 100) * 0.8;
-            const unidAlcool = alcoolGrs / 10;
-            const r = (sexo === 'M') ? 0.7 : 0.6;
-            const bacInicial = alcoolGrs / (peso * r);
-            const depuracaoHora = 0.15;
-            const reducao = depuracaoHora * tempo;
-            let txAlcoolemia = Math.max(0, bacInicial - reducao);
-
-            document.getElementById('alc-consumida').innerText = qtdeConsumida.toFixed(1) + " mL";
-            document.getElementById('alc-grs').innerText = alcoolGrs.toFixed(1) + " g";
-            document.getElementById('alc-unid').innerText = unidAlcool.toFixed(1) + " unidades";
-            document.getElementById('alc-bacinicial').innerText = bacInicial.toFixed(2) + " g/L";
-            document.getElementById('alc-bacatual').innerText = txAlcoolemia.toFixed(2) + " g/L";
-
-            const classeEl = document.getElementById('alc-classe');
-            if (txAlcoolemia < 0.2) {
-                classeEl.innerText = "Estimativa abaixo de 0,2 g/L (limite de infração). Ainda assim, qualquer valor pode gerar autuação.";
-                classeEl.className = "p-2 rounded-xl text-[11px] font-bold text-center mt-2 bg-green-100 text-green-800";
-            } else if (txAlcoolemia < 0.6) {
-                classeEl.innerText = "Entre 0,2 e 0,6 g/L: Infração de trânsito. NÃO DIRIGIR.";
-                classeEl.className = "p-2 rounded-xl text-[11px] font-bold text-center mt-2 bg-yellow-100 text-yellow-800";
-            } else {
-                classeEl.innerText = "≥ 0,6 g/L: CRIME DE TRÂNSITO. NÃO DIRIGIR DE FORMA ALGUMA.";
-                classeEl.className = "p-2 rounded-xl text-[11px] font-bold text-center mt-2 bg-red-100 text-red-800";
-            }
-        }
-
-        // 7. INSULINA
-        function calcularInsulina() {
-            const c = parseInt(document.getElementById('glic-cafe').value) || 0;
-            const a = parseInt(document.getElementById('glic-almoco').value) || 0;
-            function sup(g) { const d = g - 130; return d <= 0 ? 0 : Math.ceil(d / 50); }
-            document.getElementById('bol-cafe').innerText = (6 + sup(c)) + " U";
-            document.getElementById('bol-almoco').innerText = (8 + sup(a)) + " U";
-        }
-
-        // 8. LAB RÁPIDO
-        function analisarLabRapido() {
-            const hb = parseFloat(document.getElementById('in-hb').value);
-            const glic = parseFloat(document.getElementById('in-glic').value);
-            if (!isNaN(hb)) {
-                document.getElementById('st-hb').innerText = hb < 12 ? "BAIXA (Anemia)" : (hb > 17 ? "ALTA" : "NORMAL");
-                document.getElementById('st-hb').className = hb < 12 ? "font-bold text-red-600" : "font-bold text-emerald-600";
-            }
-            if (!isNaN(glic)) {
-                document.getElementById('st-glic').innerText = glic < 70 ? "HIPOGLICEMIA" : (glic > 99 ? "ELEVADA" : "NORMAL");
-                document.getElementById('st-glic').className = glic > 99 ? "font-bold text-red-600" : "font-bold text-emerald-600";
-            }
-        }
-
-        // 9. TUMORAIS
-        const tumorRefs = { AFP: 15, CEA: 5, CA125: 35, PSA: 4 };
-        function analisarTumoral() {
-            const m = document.getElementById('select-tumor').value;
-            const v = parseFloat(document.getElementById('valor-tumor').value);
-            const res = document.getElementById('res-tumor');
-            if (isNaN(v)) { res.classList.add('hidden'); return; }
-            res.classList.remove('hidden');
-            const alto = v > tumorRefs[m];
-            res.innerText = `${m}: ${v} vs Ref ${tumorRefs[m]} -> ${alto ? 'ELEVADO' : 'NORMAL'}`;
-            res.className = `text-xs p-3 rounded-2xl border text-center font-bold ${alto ? 'bg-red-50 text-red-700 border-red-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`;
-        }
-
-        // BANCO DE DADOS COMPLETO DE FICHAS TOXICOLÓGICAS (CIATOX / IJF)
-        const fichasDataCompleto = [
-            {"id": "FICHA - 001", "nome": "Ácido Acetil Salicílico (Aspirina®)", "sintomas": "Náuseas, vômitos, cefaleia, zumbidos, letargia, vertigem, hiperventilação, hipertermia, alcalose respiratória, acidose metabólica (>15g), desidratação, hiper/hipoglicemia, psicose, coma e sangramentos.", "exames": "Dosagem sérica de AAS (após 6h), glicemia, eletrólitos, gasometria, pH venoso/arterial, coagulograma, ureia, creatinina, pH urinário e ECG.", "tratamento": "Lavagem gástrica, carvão ativado seriado; sulfato de sódio 250 mg/kg (máx 30g); bicarbonato de sódio EV para alcalinização urinária (1-2 mEq/kg); hemodiálise se LRA grave. Vitamina K 10mg IM."},
-            {"id": "FICHA - 002", "nome": "Abelhas, Vespas e Marimbondos", "sintomas": "Dor, edema local, eritema, anafilaxia, edema de glote e choque. Múltiplas picadas (>100): náuseas, vômitos, rabdomiólise e insuficiência renal aguda.", "exames": "Hemograma, INR, glicose, sumário de urina, TGO, TGP, CK, bilirrubinas, ureia e creatinina.", "tratamento": "Compressas frias, raspagem dos ferrões com lâmina. Analgésicos, anti-histamínicos, adrenalina 1:1000 SC/IM (0,2 a 0,5 ml), corticoides e alcalinização urinária."},
-            {"id": "FICHA - 003", "nome": "Ácido Clorídrico e Soda Cáustica (Corrosivos)", "sintomas": "Dor intensa em boca, retroesternal e abdômen, edema labial/glote, sialorreia, vômitos, hematêmese, risco de estenose e perfuração digestiva, choque.", "exames": "RX de tórax e abdômen, endoscopia digestiva alta urgente (primeiras 12-24h) e avaliação cirúrgica.", "tratamento": "NÃO neutralizar, NÃO induzir vômito nem lavagem gástrica. Carvão ativado contraindicado. Analgesia potente injetável, hidratação venosa, jejum, Dexametasona 10mg EV."},
-            {"id": "FICHA - 006", "nome": "Solvente Orgânico / Acetona® (Propanona)", "sintomas": "Inalação: irritação brônquica, náuseas, ataxia, hipotensão, hipotermia. Ingestão: gastrite hemorrágica, depressão do SNC e coma em doses maciças.", "exames": "Glicemia, TGO, TGP, bilirrubinas, ureia, creatinina, cetonemia/cetonúria.", "tratamento": "Lavagem gástrica e carvão ativado útil até 30 min. Suporte respiratório e sintomáticos."},
-            {"id": "FICHA - 007", "nome": "Broncodilatadores (Teofilina, Aminofilina)", "sintomas": "Náuseas, vômitos, taquicardia, broncoespasmo, taquipneia, tremores, arritmias, hipertermia, hipocalemia profunda e convulsões tônico-clônicas.", "exames": "ECG, gasometria, eletrólitos (K, Ca, Mg) e teofilinemia.", "tratamento": "Lavagem gástrica, carvão ativado seriado, diazepam para convulsões, reposição de K, propranolol/verapamil para taquicardia. Hemoperfusão em casos graves."},
-            {"id": "FICHA - 008", "nome": "Aranha Armadeira (Phoneutria nigriventer)", "sintomas": "Dor imediata e violenta, sudorese, eritema local. Gravidade: vômitos, sialorreia, priapismo, agitação, arritmias, edema agudo de pulmão e choque.", "exames": "ECG contínuo, eletrólitos e gasometria.", "tratamento": "Infiltração com Lidocaína 2% sem vasoconstritor no ponto da picada. Casos moderados/graves: Soro Antiaraquídico (SAA) EV (2 a 6 ampolas) com prometazina prévia."},
-            {"id": "FICHA - 009", "nome": "Antidepressivos Tricíclicos (Amitriptilina, Nortriptilina)", "sintomas": "Boca seca, midríase, rubor facial, retenção urinária, taquicardia. Gravidade: QRS largo (>100ms), arritmias ventriculares, hipotensão refratária, coma e convulsões.", "exames": "ECG seriado contínuo (monitorar duração do QRS e intervalo QT), gasometria e eletrólitos.", "tratamento": "Lavagem gástrica e carvão ativado. Bicarbonato de Sódio 8,4% (1 a 2 mEq/kg EV em bolus) se QRS > 100 ms ou arritmia. Diazepam para convulsões."},
-            {"id": "FICHA - 010", "nome": "Neurolépticos (Haloperidol, Clorpromazina)", "sintomas": "Crises oculógiras, trismo, espasmos musculares, torcicolo, distonia aguda e opistótono (síndrome extrapiramidal). Risco de Síndrome Neuroléptica Maligna.", "exames": "Avaliação clínica e dosagem de CK total.", "tratamento": "Lavagem gástrica e carvão ativado. Antídoto: Biperideno (Akineton®) 3 a 5 mg EV/IM em adultos (0,06 a 0,1 mg/kg em crianças)."},
-            {"id": "FICHA - 011", "nome": "Plantas com Toxoalbumina (Mamona, Pinhão Roxo)", "sintomas": "Início retardado (horas/dias). Náuseas, vômitos, cólicas intensas, diarreia sanguinolenta, desidratação grave, torpor e choque circulatório.", "exames": "Hemograma, eletrólitos, coagulograma e função renal/hepática.", "tratamento": "Hidratação vigorosa venosa, lavagem gástrica precoce e carvão ativado em doses repetidas."},
-            {"id": "FICHA - 012", "nome": "Aranha Viúva Negra (Latrodectus / Janduim)", "sintomas": "Dor intensa que se irradia para dorso e abdômen (abdômen em tábua simulando abdômen agudo cirúrgico), tremores, sudorese profusa e contraturas musculares.", "exames": "Eletrólitos, CK total, sumário de urina e ECG.", "tratamento": "Opioides para dor, Diazepam para relaxamento muscular, Gluconato de Cálcio 10% EV. Soro Antilatrodectus (1-2 ampolas) nos casos graves."},
-            {"id": "FICHA - 013", "nome": "Aranha Marrom (Loxosceles sp.)", "sintomas": "Picada pouco dolorosa. Após 12-24h: dor em queimação com formação da placa marmórea (isquemia e necrose central). Forma cutâneo-visceral: hemólise intravascular, icterícia e LRA.", "exames": "Hemograma, sumário de urina, bilirrubinas, LDH, ureia e creatinina.", "tratamento": "Prednisona 0,5 a 1 mg/kg/dia por 7-10 dias, Dapsona 100 mg/dia. Soro Antiloxoscélico ou Antiaraquídico (5 ampolas na forma grave cutânea; 10 ampolas na visceral)."},
-            {"id": "FICHA - 014", "nome": "Peróxido de Hidrogênio (Água Oxigenada concentrada)", "sintomas": "Irritação digestiva, distensão abdominal por liberação súbita de O2, náuseas, vômitos, queimaduras químicas e risco de embolia gasosa em vasos.", "exames": "Endoscopia se ingestão de concentrações elevadas (>10%).", "tratamento": "Tratamento sintomático e hidratação. Lavar pele e olhos abundantemente com água se contato."},
-            {"id": "FICHA - 015", "nome": "Descongestionantes / Nafazolina (Adnax®, Sorine®)", "sintomas": "Sonolência, letargia profunda, bradicardia acentuada, hipotermia, sudorese, miose e depressão respiratória (extremamente perigoso em bebês).", "exames": "Glicemia, gasometria e monitorização cardiorrespiratória.", "tratamento": "Lavagem gástrica até 1h, suporte ventilatório. Naloxona EV (0,01 a 0,1 mg/kg) pode reverter a depressão central. Atropina se bradicardia grave."},
-            {"id": "FICHA - 016", "nome": "Anti-Histamínicos (Prometazina, Difenidramina)", "sintomas": "Sedação, agitação paradoxal, delírios, alucinações, boca seca, midríase, retenção urinária, taquicardia, hipertermia e convulsões.", "exames": "Eletrólitos, CK, gasometria e ECG.", "tratamento": "Lavagem gástrica e carvão ativado. Diazepam EV para controle de convulsões. Resfriamento físico."},
-            {"id": "FICHA - 017", "nome": "Aminas Simpaticomiméticas (Adrenalina, Efedrina)", "sintomas": "Agitação, tremores, midríase, hipertensão arterial severa, taquicardia ventricular, extrassístoles e fibrilação ventricular.", "exames": "ECG contínuo, glicemia e eletrólitos.", "tratamento": "Diazepam EV para relaxamento e controle hemodinâmico. Nitroprussiato de Sódio (Nipride) nas emergências hipertensivas."},
-            {"id": "FICHA - 018", "nome": "Paracetamol (Acetaminofeno)", "sintomas": "0-24h: assintomático ou náuseas/vômitos. 24-48h: dor em hipocôndrio direito. 72-96h: necrose hepática maciça, icterícia, encefalopatia, coagulopatia grave e óbito.", "exames": "Paracetamol sérico (nomograma de Rumack-Matthew após 4h), AST, ALT, TP/INR e creatinina.", "tratamento": "Lavagem e carvão se precoce. Antídoto: N-Acetilcisteína (NAC) EV: 150 mg/kg em 1h, depois 50 mg/kg em 4h e 100 mg/kg nas 16h seguintes."},
-            {"id": "FICHA - 021", "nome": "Atropina e Drogas Antimuscarínicas", "sintomas": "Boca seca, pele quente e seca, rubor facial, midríase paralítica, taquicardia, retenção urinária, delírio agitado, alucinações e hipertermia severa.", "exames": "Eletrólitos, ECG contínuo e temperatura central.", "tratamento": "Lavagem gástrica, carvão ativado. Diazepam para agitação. Medidas físicas para controle térmico. Fisostigmina EV lenta apenas em delírio extremo refratário."},
-            {"id": "FICHA - 022", "nome": "Cobra - Bothrops (Jararaca, Urutu)", "sintomas": "Dor e edema imediatos de progressão rápida, equimoses, bolhas necróticas e sangramentos sistêmicos (gengivorragia). Risco de choque e insuficiência renal aguda.", "exames": "Tempo de Coagulação (TC), TAP, TPTA, hemograma, ureia e creatinina.", "tratamento": "Soro Antibotrópico (SAB) EV puro após prometazina IM: Leve = 2-4 amp; Moderado = 5-8 amp; Grave = 12 amp. Manter membro elevado."},
-            {"id": "FICHA - 023", "nome": "Benzodiazepínicos (Diazepam, Clonazepam)", "sintomas": "Sonolência, ataxia, disartria, hipotonia, nistagmo e confusão mental. Coma e depressão respiratória em doses maciças ou coingestão com álcool.", "exames": "Glicemia capilar e oximetria de pulso.", "tratamento": "Suporte de vias aéreas e oxigênio. Antídoto: Flumazenil 0,2 a 0,3 mg EV lento (máx 3 mg). Contraindicado em usuários crônicos ou suspeita de tricíclicos."},
-            {"id": "FICHA - 024", "nome": "Barbitúricos (Fenobarbital / Gardenal®)", "sintomas": "Letargia, fala arrastada, ataxia, nistagmo, coma profundo flácido, hipotensão, choque, bradipneia e bolhas cutâneas em pontos de pressão.", "exames": "Eletrólitos, glicose, gasometria e RX de tórax.", "tratamento": "Lavagem gástrica (mesmo tardia), carvão ativado em doses seriadas (a cada 4h por 48h). Alcalinização urinária com Bicarbonato de Sódio. Hemodiálise se nível >80 mcg/ml."},
-            {"id": "FICHA - 026", "nome": "Gás Butano / Gás de Cozinha (GLP)", "sintomas": "Asfixia por deslocamento de oxigênio. Cefaleia, sonolência, narcose, arritmias cardíacas por sensibilização miocárdica a catecolaminas e parada respiratória.", "exames": "Gasometria arterial e ECG.", "tratamento": "Retirar a vítima para local arejado, oxigênio a 100% sob máscara. Evitar epinefrina/aminas simpaticomiméticas."},
-            {"id": "FICHA - 027", "nome": "Cafeína", "sintomas": "Insônia, tremores musculares finos, taquicardia, extrassístoles, arritmias ventriculares, vômitos, acidose e crises convulsivas.", "exames": "ECG contínuo, eletrólitos (potássio) e glicemia.", "tratamento": "Lavagem gástrica, carvão ativado, Diazepam EV para tremores e convulsões. Esmolol ou metoprolol para controle de taquiarritmias."},
-            {"id": "FICHA - 030", "nome": "Rodenticidas Cumarínicos (Raticidas)", "sintomas": "Inibição de fatores da coagulação (II, VII, IX e X). Gengivorragia, epistaxe, hematúria, equimoses, melena e hemorragias internas após 24 a 48h.", "exames": "Tempo de Protrombina (TAP / INR) seriado e hematócrito.", "tratamento": "Lavagem e carvão precoce. Antídoto: Vitamina K1 (Fitomenadiona) 10 a 25 mg IM ou EV diluída lenta de 8/8h. Plasma Fresco se sangramento com risco de vida."},
-            {"id": "FICHA - 031", "nome": "Acetato de Polivinila / Cola Branca", "sintomas": "Praticamente atóxico. Ingestões volumosas podem provocar náuseas, vômitos mecânicos e desconforto abdominal leve.", "exames": "Avaliação clínica.", "tratamento": "Ofertar líquidos e tranquilizar os responsáveis."},
-            {"id": "FICHA - 032", "nome": "Etanol / Álcool Etílico (Intoxicação Aguda)", "sintomas": "Desinibição, euforia seguida de ataxia, disartria, vômitos, hipotermia, hipoglicemia severa (em crianças), estupor, coma alcoólico e depressão respiratória.", "exames": "Glicemia capilar obrigatória, eletrólitos e gasometria.", "tratamento": "Glicose a 50% EV (20 a 50 ml) precedida de Tiamina 100 mg IM/EV em adultos. Agasalhar para evitar hipotermia. Suporte de via aérea."},
-            {"id": "FICHA - 033", "nome": "Plantas com Oxalato de Cálcio (Comigo-Ninguém-Pode)", "sintomas": "Ráfides de oxalato causam dor em queimação imediata na boca, edema volumoso de língua, lábios e glote com asfixia mecânica, sialorreia e disfagia.", "exames": "Inspeção visual orofaríngea e laringoscopia se rouquidão/estridor.", "tratamento": "NÃO provocar vômitos nem lavagem. Gelo local, leite frio ou cloreto/gluconato de cálcio VO. Corticoides e analgesia potente. IOT em edema de glote."},
-            {"id": "FICHA - 034", "nome": "Cobra - Crotalus (Cascavel)", "sintomas": "Edema local mínimo com parestesia. Fácies neurotóxica/miastênica (ptose palpebral, diplopia), mialgia generalizada e urina escura cor de coca-cola (mioglobinúria).", "exames": "CK total, sumário de urina, ureia, creatinina e tempo de coagulação.", "tratamento": "Hidratação venosa vigorosa imediata (manter diurese clara >1-2 ml/kg/h). Soro Anticrotálico (SAC) EV: Moderado = 10 amp; Grave = 20 amp."},
-            {"id": "FICHA - 035", "nome": "Cobra - Micrurus (Coral Verdadeira)", "sintomas": "Sem lesão inflamatória local. Ptose palpebral, oftalmoplegia, salivação espessa, paralisia flácida e parada respiratória rápida por paralisia diafragmática.", "exames": "Gasometria arterial, oximetria e monitorização ventilatória.", "tratamento": "TODO CASO É GRAVE. 10 ampolas de Soro Antielapídico (SAEl) EV. Suporte de via aérea (IOT). Teste com Neostigmina 0,5mg EV + Atropina 0,6mg EV."},
-            {"id": "FICHA - 037", "nome": "Desinfetantes Domésticos / Pinho", "sintomas": "Lesão cáustica em mucosas, vômitos, dor retroesternal, depressão do SNC e risco de pneumonite química por aspiração.", "exames": "RX de tórax se tosse/engasgo, endoscopia se dor severa.", "tratamento": "Não provocar vômito. Pequenas doses de água. Protetor gástrico e observação."},
-            {"id": "FICHA - 040", "nome": "Cobra Não Peçonhenta (Cipó, Caninana, Jiboia)", "sintomas": "Marcas puntiformes ou lacerações superficiais em ferradura. Sem manifestação sistêmica ou alteração de coagulação.", "exames": "Tempo de coagulação em casos de dúvida diagnóstica.", "tratamento": "Lavar local com água e sabão, antissepsia, vacina antitetânica e analgesia simples."},
-            {"id": "FICHA - 044", "nome": "Fluoreto de Sódio (Flúor Odontológico)", "sintomas": "Dor abdominal, vômitos cáusticos, tetania, hipocalcemia aguda severa, hipomagnesemia, hipercalemia e arritmias cardíacas ventriculares graves.", "exames": "Cálcio iônico, magnésio, potássio sérico e ECG.", "tratamento": "Administrar sais de cálcio VO (leite, carbonato). Gluconato de Cálcio 10% EV lento e Sulfato de Magnésio EV para estabilizar miocárdio."},
-            {"id": "FICHA - 045", "nome": "Produtos de Baixa Toxicidade (Giz, Lápis, Batom)", "sintomas": "Assintomático ou leve irritação gástrica mecânica transitória.", "exames": "Desnecessários.", "tratamento": "Ofertar líquidos e tranquilizar a família."},
-            {"id": "FICHA - 046", "nome": "Desincrustantes / Ácido Oxálico", "sintomas": "Queimadura química profunda na orofaringe, hematêmese, acidose metabólica grave, hipocalcemia aguda com tetania e choque.", "exames": "Endoscopia precoce, gasometria arterial e eletrólitos (cálcio).", "tratamento": "Jejum absoluto, analgesia opioide, expansão venosa e reposição vigorosa de Gluconato de Cálcio EV."},
-            {"id": "FICHA - 047", "nome": "Detergentes Catiônicos / Amaciantes", "sintomas": "Queimaduras corrosivas no trato digestivo, náuseas, vômitos, sialorreia, depressão do SNC, coma e hipotensão arterial.", "exames": "Endoscopia digestiva se concentração elevada (>5%).", "tratamento": "Demulcentes orais (hidróxido de alumínio). Suporte ventilatório e hidratação venosa."},
-            {"id": "FICHA - 049", "nome": "Coagulantes / Ácido Épsilon-Aminocapróico (Ipsilon®)", "sintomas": "Hipotensão severa e bradicardia se infusão rápida. Tromboses e risco de necrose isquêmica tecidual.", "exames": "ECG e coagulograma.", "tratamento": "Suspender droga e suporte hemodinâmico com fluidos."},
-            {"id": "FICHA - 050", "nome": "Piretroides (SBP, K-Othrine, Baygon)", "sintomas": "Parestesias em face e lábios, prurido, dermatite. Ingestão maciça: cefaleia, salivação, tremores, convulsões e prolongamento de intervalo QT no ECG.", "exames": "ECG para avaliação de QT e glicemia.", "tratamento": "Lavar pele com água e sabão. Carvão ativado se ingestão. Diazepam EV se convulsões."},
-            {"id": "FICHA - 051", "nome": "Monóxido de Carbono (Fumaça / Incêndio)", "sintomas": "Cefaleia latejante, náuseas, dispneia, confusão mental, síncope, coloração da pele vermelho-cereja (tardia), convulsões e PCR por hipóxia anóxica.", "exames": "Dosagem de Carboxihemoglobina (HbCO), gasometria arterial e lactato.", "tratamento": "Retirar imediatamente da fonte. Oxigênio a 100% sob máscara com reservatório ou IOT até normalizar HbCO. Considerar oxigenoterapia hiperbárica."},
-            {"id": "FICHA - 053", "nome": "Aranha Caranguejeira", "sintomas": "Picada com dor local discreta. Liberação de cerdas urticantes que causam prurido intenso, pápulas eritematosas e ceratite/conjuntivite ocular.", "exames": "Avaliação clínica.", "tratamento": "Lavagem com água e sabão. Anti-histamínicos e pomadas de corticoide."},
-            {"id": "FICHA - 054", "nome": "Mercúrio (Termômetro / Sais Inorgânicos)", "sintomas": "Hg metálico ingerido de termômetro quebrado é atóxico no TGI íntegro. Inalação de vapores ou sais: pneumonite química, estomatite, diarreia sanguinolenta e necrose tubular renal.", "exames": "Dosagem urinária de mercúrio e função renal.", "tratamento": "Para termômetro: tranquilizar. Sais: Dimercaprol (BAL) IM 3 a 5 mg/kg a cada 4h."},
-            {"id": "FICHA - 056", "nome": "Organoclorados (BHC, Aldrin, DDT)", "sintomas": "Parestesia perioral e facial, hiperexcitabilidade, apreensão, tremores generalizados, crises convulsivas epileptiformes de repetição e arritmias cardíacas.", "exames": "Eletrólitos, ECG contínuo e gasometria.", "tratamento": "Descontaminação da pele. Carvão ativado seriado. Diazepam EV em altas doses para controle das convulsões. Contraindicado alimentos gordurosos e epinefrina."},
-            {"id": "FICHA - 057", "nome": "Organofosforados e Carbamatos (Chumbinho)", "sintomas": "Síndrome Colinérgica: Miose pontual, broncorreia severa, broncoespasmo, bradicardia, sialorreia abundante, cólicas, fasciculações e paralisia respiratória.", "exames": "Colinesterase eritrocitária/plasmática, gasometria e ECG.", "tratamento": "EPI pela equipe. Descontaminação cutânea. Antídoto: Atropina 1 a 4 mg EV em bolus imediato (dobrar a cada 5-10 min até secar pulmão). Pralidoxima 1 a 2g se organofosforado."},
-            {"id": "FICHA - 058", "nome": "Opioides (Morfina, Fentanil, Metadona, Tramadol)", "sintomas": "Tríade clássica: Miose pupilar puntiforme, Depressão do nível de consciência (coma) e Depressão respiratória severa (bradipneia/apneia). Hipotermia.", "exames": "Gasometria arterial e glicemia.", "tratamento": "Garantir ventilação invasiva/máscara. Antídoto: Naloxona 0,4 a 2 mg EV a cada 2 a 3 min até reverter a bradipneia (infusão contínua SN devido à meia-vida curta)."},
-            {"id": "FICHA - 059", "nome": "Derivados de Petróleo (Querosene, Gasolina, Varsol)", "sintomas": "Aspiração respiratória gera pneumonia química grave, tosse sufocante, taquipneia, febre e hipoxemia. Ingestão causa depressão do SNC e coma.", "exames": "RX de tórax imediato e controle após 6h, gasometria arterial.", "tratamento": "NÃO induzir vômito nem lavagem gástrica convencional (risco extremo de aspiração). Oxigênio e suporte ventilatório."},
-            {"id": "FICHA - 060", "nome": "Antieméticos (Metoclopramida / Plasil®, Bromoprida)", "sintomas": "Reação extrapiramidal / distonia aguda: trismo, crise oculógira, espasmos faciais e torcicolo súbito.", "exames": "Avaliação clínica.", "tratamento": "Antídoto: Biperideno (Akineton®) 3 a 5 mg EV/IM (0,06 a 0,1 mg/kg em crianças) com melhora dramática em poucos minutos."},
-            {"id": "FICHA - 066", "nome": "Taturanas Urticantes / Lonomia sp.", "sintomas": "Dor em queimação local, eritema e edema. Gênero Lonomia causa síndrome hemorrágica sistêmica (gengivorragia, equimoses, hematúria, hematomas) e insuficiência renal aguda.", "exames": "Tempo de Coagulação (TC), TAP, TPTA, hemograma e creatinina.", "tratamento": "Compressas frias e anestésico local. Se acidente por Lonomia com coagulopatia: Soro Antilonômico (SALon) EV (5 a 10 ampolas)."},
-            {"id": "FICHA - 068", "nome": "Sulfato Ferroso (Intoxicação por Ferro)", "sintomas": "Fase 1: vômitos e diarreia hemorrágicos. Fase 2: melhora aparente (6-24h). Fase 3: choque circulatório, acidose metabólica grave, necrose hepática e falência renal.", "exames": "Ferro sérico, gasometria e RX de abdômen (comprimidos radiopacos).", "tratamento": "Lavagem gástrica precoce com SF. Carvão ativado não adsorve ferro. Antídoto: Deferoxamina (Desferal®) EV em infusão de 15 mg/kg/h nos casos graves."},
-            {"id": "FICHA - 078", "nome": "Cobra - Lachesis (Surucucu Pico-de-Jaca)", "sintomas": "Dor e necrose tecidual extensas associadas à Síndrome Vagal intensa: bradicardia, hipotensão arterial grave, diarreia aquosa profusa e cólicas abdominais.", "exames": "Tempo de coagulação, hemograma, ureia e creatinina.", "tratamento": "Hidratação venosa vigorosa. Soro Antilaquético (SAL) EV: Moderado = 10 amp; Grave = 20 amp."},
-            {"id": "FICHA - 079", "nome": "Metanol (Álcool Metílico / Solvente)", "sintomas": "Período assintomático de 12-24h seguido por vômitos, acidose metabólica com anion gap elevado severa, borramento visual e cegueira permanente.", "exames": "Gasometria arterial, eletrólitos, amilase e dosagem de formato.", "tratamento": "Bicarbonato EV para acidose. Antídoto: Etanol a 10% EV (ataque 0,8 g/kg) ou Fomepizol. Ácido Folínico (Leucovorin 50mg EV 6/6h). Hemodiálise precoce."},
-            {"id": "FICHA - 098", "nome": "Caravelas e Águas-Vivas (Cnidários)", "sintomas": "Dor queimante violenta imediata com lesões lineares eritematosas e bolhas. Risco de choque anafilático ou espasmos musculares sistêmicos.", "exames": "Monitorização de sinais vitais.", "tratamento": "NUNCA usar água doce. Lavar abundantemente com ÁGUA DO MAR ou VINAGRE (Ácido Acético 5%) por 30 minutos. Remoção cuidadosa dos tentáculos com pinça."},
-            {"id": "FICHA - 099", "nome": "Betabloqueadores (Propranolol, Metoprolol, Atenolol)", "sintomas": "Bradicardia sinusal severa, bloqueio atrioventricular (BAV), hipotensão refratária, choque cardiogênico, hipoglicemia e convulsões.", "exames": "ECG contínuo, glicemia e eletrólitos.", "tratamento": "Atropina 0,5 a 2 mg EV. Antídoto principal: Glucagon 5 a 10 mg EV em bolus seguido de infusão contínua (1 a 5 mg/h). Marca-passo se refratário."},
-            {"id": "FICHA - 135", "nome": "Sapos Venenosos (Bufo spp. / Bufotoxinas)", "sintomas": "Toxinas com ação digitálica (cárdio-ativas). Salivação, náuseas, bradicardia grave, BAV de alto grau, fibrilação ventricular, hipercalemia e parada cardíaca.", "exames": "ECG contínuo e potássio sérico.", "tratamento": "Lavar cavidade oral com água/soro. Atropina EV para bradicardia. Fenitoína para arritmias ventriculares. Contraindicado Gluconato de Cálcio (risco de parada em sístole)."}
+        // Catálogo de Fichas Toxicológicas (IJF)
+        const fichasTox = [
+            { id: "FICHA - 001", nome: "Ácido Acetil Salicílico (Aspirina®)", sin: "Náuseas, hiperventilação, acidose metabólica, zumbidos, letargia, convulsões, coma.", ex: "Dosagem sérica de AAS (após 6h), gasometria, coagulograma, ureia, creatinina e ECG.", cond: "Lavagem gástrica, carvão ativado seriado; Bicarbonato de Sódio EV para alcalinização urinária; hemodiálise em casos graves." },
+            { id: "FICHA - 002", nome: "Abelhas, Vespas e Marimbondos", sin: "Dor e edema local, anafilaxia, edema de glote e choque. Picadas maciças (>100): rabdomiólise e LRA.", ex: "Hemograma, INR, glicose, CK total, bilirrubinas, ureia e creatinina.", cond: "Compressas frias, raspagem dos ferrões com lâmina. Adrenalina 1:1000 SC/IM (0,2 a 0,5 ml), anti-histamínicos e hidratação vigorosa." },
+            { id: "FICHA - 003", nome: "Ácido Clorídrico e Soda Cáustica (Corrosivos)", sin: "Dor orofaríngea intensa, sialorreia, estenose e perfuração esofágica/gástrica, choque.", ex: "RX tórax/abdômen, endoscopia digestiva alta precoce (12-24h) e avaliação cirúrgica.", cond: "NÃO induzir vômito nem lavagem gástrica. Carvão ativado contraindicado. Jejum, analgesia potente e hidratação venosa." },
+            { id: "FICHA - 006", nome: "Solvente Orgânico / Acetona® (Propanona)", sin: "Irritação brônquica, ataxia, hipotensão, náuseas, gastrite hemorrágica e coma em doses maciças.", ex: "Glicemia, TGO, TGP, ureia, creatinina e gasometria.", cond: "Lavagem gástrica e carvão ativado se precoce (<30 min). Suporte respiratório e sintomáticos." },
+            { id: "FICHA - 007", nome: "Broncodilatadores (Teofilina, Aminofilina)", sin: "Taquicardia, broncoespasmo, tremores, arritmias ventriculares, hipocalemia profunda e convulsões.", ex: "ECG contínuo, gasometria, eletrólitos (K, Ca, Mg) e teofilinemia.", cond: "Lavagem gástrica, carvão ativado seriado, Diazepam EV para convulsões, reposição de K e betabloqueador para arritmia." },
+            { id: "FICHA - 008", nome: "Aranha Armadeira (Phoneutria nigriventer)", sin: "Dor lancinante imediata, sudorese local. Gravidade: vômitos, priapismo, edema agudo de pulmão e choque.", ex: "ECG contínuo, eletrólitos e gasometria.", cond: "Infiltração com Lidocaína 2% sem vasoconstritor no ponto da picada. Soro Antiaraquídico (SAA) EV (2 a 6 ampolas) nos casos moderados/graves." },
+            { id: "FICHA - 009", nome: "Antidepressivos Tricíclicos (Amitriptilina, Nortriptilina)", sin: "Efeitos anticolinérgicos: boca seca, midríase, rubor, retenção urinária. Gravidade: QRS > 100ms, arritmias ventriculares, hipotensão refratária e coma.", ex: "ECG contínuo (monitorar QRS e QT), gasometria e eletrólitos.", cond: "Lavagem e carvão ativado seriado. Bicarbonato de Sódio 8,4% (1 a 2 mEq/kg EV em bolus) obrigatório se QRS > 100 ms. Diazepam para convulsões." },
+            { id: "FICHA - 010", nome: "Neurolépticos (Haloperidol, Clorpromazina)", sin: "Crises oculógiras, trismo, torcicolo espasmódico, distonia aguda e rigidez (síndrome extrapiramidal).", ex: "Avaliação clínica e dosagem de CK total.", cond: "Lavagem e carvão. Antídoto: Biperideno (Akineton®) 3 a 5 mg EV/IM em adultos (0,06 a 0,1 mg/kg em crianças)." },
+            { id: "FICHA - 011", nome: "Plantas com Toxoalbumina (Mamona, Pinhão Roxo)", sin: "Início retardado (horas/dias). Vômitos, cólicas intensas, diarreia sanguinolenta, desidratação grave e choque.", ex: "Hemograma, eletrólitos e função renal/hepática.", cond: "Hidratação venosa vigorosa, lavagem gástrica precoce e carvão ativado em doses seriadas." },
+            { id: "FICHA - 012", nome: "Aranha Viúva Negra (Latrodectus / Janduim)", sin: "Dor intensa irradiada para abdômen (abdômen em tábua simulando abdômen agudo cirúrgico), tremores e sudorese profusa.", ex: "Eletrólitos, CK total, sumário de urina e ECG.", cond: "Opioides para dor, Diazepam EV para relaxamento muscular, Gluconato de Cálcio 10% EV e Soro Antilatrodectus (1-2 ampolas)." },
+            { id: "FICHA - 013", nome: "Aranha Marrom (Loxosceles sp.)", sin: "Picada pouco dolorosa inicial. Após 12-24h: placa marmórea com necrose central. Forma cutâneo-visceral: hemólise intravascular maciça, icterícia e LRA.", ex: "Hemograma, sumário de urina, bilirrubinas, LDH e creatinina.", cond: "Prednisona 0,5 a 1 mg/kg/dia por 7-10 dias, Dapsona 100 mg/dia. Soro Antiloxoscélico / Antiaraquídico (5 a 10 ampolas)." },
+            { id: "FICHA - 014", nome: "Peróxido de Hidrogênio (Água Oxigenada concentrada)", sin: "Irritação digestiva, distensão abdominal mecânica por liberação rápida de oxigênio gasoso, queimação e risco de embolia.", ex: "Endoscopia se concentração elevada (>10%).", cond: "Tratamento sintomático e hidratação. Lavar pele e mucosas com água abundante." },
+            { id: "FICHA - 015", nome: "Descongestionantes / Nafazolina (Adnax®, Sorine®)", sin: "Sonolência, letargia profunda, bradicardia acentuada, hipotermia, sudorese e depressão respiratória grave (especialmente em bebês).", ex: "Glicemia, gasometria e monitorização ventilatória.", cond: "Lavagem gástrica até 1h e suporte respiratório. Naloxona EV (0,01 a 0,1 mg/kg) pode reverter a depressão central." },
+            { id: "FICHA - 016", nome: "Anti-Histamínicos (Prometazina, Difenidramina)", sin: "Sedação ou excitação paradoxal, delírios, alucinações, boca seca, midríase, retenção urinária e hipertermia.", ex: "Eletrólitos, CK total e ECG.", cond: "Lavagem gástrica e carvão ativado. Diazepam EV para controle de agitação e convulsões. Resfriamento corporal." },
+            { id: "FICHA - 017", nome: "Aminas Simpaticomiméticas (Adrenalina, Efedrina)", sin: "Tremores, midríase, hipertensão arterial severa, taquiarritmias ventriculares, dor torácica e risco de AVE/IAM.", ex: "ECG contínuo, glicemia e eletrólitos.", cond: "Diazepam EV para relaxamento e controle adrenérgico. Nitroprussiato de Sódio (Nipride) nas crises hipertensivas severas." },
+            { id: "FICHA - 018", nome: "Paracetamol (Acetaminofeno)", sin: "Primeiras 24h assintomáticas. Após 48-72h: necrose hepática maciça, icterícia, encefalopatia, coagulopatia grave e óbito.", ex: "Nível sérico de paracetamol (nomograma de Rumack-Matthew após 4h), AST, ALT, TP/INR e creatinina.", cond: "Lavagem e carvão precoce. Antídoto: N-Acetilcisteína (NAC) EV: 150 mg/kg em 1h, depois 50 mg/kg em 4h e 100 mg/kg em 16h." },
+            { id: "FICHA - 021", nome: "Atropina e Antimuscarínicos", sin: "Boca seca, pele vermelha e seca, midríase paralítica, taquicardia sinusal, retenção urinária, delírio e hipertermia.", ex: "Eletrólitos, ECG contínuo e monitorização térmica.", cond: "Lavagem gástrica e carvão ativado. Diazepam para sedação. Medidas físicas para controle térmico." },
+            { id: "FICHA - 022", nome: "Cobra - Bothrops (Jararaca, Urutu)", sin: "Dor, edema indurado de progressão rápida, equimoses, bolhas e gengivorragia. Risco de choque e insuficiência renal aguda.", ex: "Tempo de Coagulação (TC), TAP, TPTA, hemograma e creatinina.", cond: "Soro Antibotrópico (SAB) EV puro após prometazina IM: Leve = 2-4 amp; Moderado = 5-8 amp; Grave = 12 amp." },
+            { id: "FICHA - 023", nome: "Benzodiazepínicos (Diazepam, Clonazepam)", sin: "Sonolência, ataxia, disartria, hipotonia e confusão. Coma com depressão respiratória em doses maciças ou coingestão com álcool.", ex: "Glicemia capilar e oximetria de pulso.", cond: "Suporte de vias aéreas e oxigênio. Antídoto: Flumazenil 0,2 a 0,3 mg EV lento (máx 3 mg). Cuidado com histórico de convulsão." },
+            { id: "FICHA - 024", nome: "Barbitúricos (Fenobarbital / Gardenal®)", sin: "Letargia, fala arrastada, ataxia, coma profundo flácido, hipotensão, choque, bradipneia e lesões bolhosas cutâneas.", ex: "Eletrólitos, glicose, gasometria e RX de tórax.", cond: "Lavagem gástrica, carvão ativado seriado (a cada 4h por 48h) e alcalinização urinária com Bicarbonato de Sódio. Hemodiálise se severo." },
+            { id: "FICHA - 026", nome: "Gás Butano / Gás de Cozinha (GLP)", sin: "Asfixia por deslocamento de oxigênio. Narcose, sonolência, arritmias ventriculares por sensibilização miocárdica e parada respiratória.", ex: "Gasometria arterial e ECG.", cond: "Remoção para local arejado, oxigênio a 100% sob máscara. Evitar aminas simpaticomiméticas." },
+            { id: "FICHA - 027", nome: "Cafeína", sin: "Insônia, tremores musculares finos, taquicardia, extrassístoles, arritmias ventriculares, vômitos e crises convulsivas.", ex: "ECG contínuo, eletrólitos (K) e glicemia.", cond: "Carvão ativado, Diazepam EV para tremores e convulsões. Betabloqueador cardioseletivo para controle de taquiarritmias." },
+            { id: "FICHA - 030", nome: "Rodenticidas Cumarínicos (Raticidas)", sin: "Inibição de fatores da coagulação (II, VII, IX e X). Gengivorragia, epistaxe, hematúria, equimoses espontâneas e melena.", ex: "Tempo de Protrombina (TAP / INR) seriado.", cond: "Carvão ativado precoce. Antídoto: Vitamina K1 (Fitomenadiona) 10 a 25 mg IM ou EV diluída lenta de 8/8h. Plasma Fresco se sangramento ativo." },
+            { id: "FICHA - 031", nome: "Acetato de Polivinila / Cola Branca", sin: "Praticamente atóxico. Ingestões volumosas podem provocar náuseas e vômitos mecânicos leves.", ex: "Avaliação clínica.", cond: "Ofertar líquidos e tranquilizar os responsáveis." },
+            { id: "FICHA - 032", nome: "Etanol / Álcool Etílico (Intoxicação Aguda)", sin: "Desinibição, euforia seguida de ataxia, disartria, hipotermia, hipoglicemia severa (em crianças), estupor e coma alcoólico.", ex: "Glicemia capilar obrigatória, eletrólitos e gasometria.", cond: "Glicose a 50% EV (20 a 50 ml) precedida de Tiamina 100 mg IM/EV em adultos. Agasalhar para evitar hipotermia." },
+            { id: "FICHA - 033", nome: "Plantas com Oxalato de Cálcio (Comigo-Ninguém-Pode)", sin: "Dor em queimação imediata na boca, edema volumoso de língua, lábios e glote com asfixia mecânica, sialorreia e disfagia.", ex: "Inspeção visual orofaríngea e laringoscopia.", cond: "NÃO provocar vômito nem lavagem. Gelo local, leite frio ou sais de cálcio VO. Corticoides e analgesia potente. IOT se edema de glote." },
+            { id: "FICHA - 034", nome: "Cobra - Crotalus (Cascavel)", sin: "Edema local mínimo com parestesia. Fácies neurotóxica (ptose palpebral, diplopia), mialgia generalizada e urina escura cor de coca-cola.", ex: "CK total, sumário de urina, ureia, creatinina e tempo de coagulação.", cond: "Hidratação venosa vigorosa imediata (manter diurese clara >1-2 ml/kg/h). Soro Anticrotálico (SAC) EV: Moderado = 10 amp; Grave = 20 amp." },
+            { id: "FICHA - 035", nome: "Cobra - Micrurus (Coral Verdadeira)", sin: "Sem lesão inflamatória local. Ptose palpebral, oftalmoplegia, salivação espessa, paralisia flácida e parada respiratória por asfixia.", ex: "Gasometria arterial, oximetria e monitorização ventilatória.", cond: "TODO CASO É GRAVE. 10 ampolas de Soro Antielapídico (SAEl) EV. Suporte de via aérea (IOT). Teste com Neostigmina + Atropina." },
+            { id: "FICHA - 037", nome: "Desinfetantes Domésticos / Pinho", sin: "Lesão cáustica em mucosas, vômitos, dor retroesternal, depressão do SNC e risco de pneumonite química por aspiração.", ex: "RX de tórax se tosse/engasgo, endoscopia se dor severa.", cond: "Não provocar vômito. Pequenas doses de água. Protetor gástrico e observação clínica." },
+            { id: "FICHA - 040", nome: "Cobra Não Peçonhenta (Cipó, Caninana, Jiboia)", sin: "Marcas puntiformes ou lacerações superficiais em ferradura. Sem manifestação sistêmica ou alteração de coagulação.", ex: "Tempo de coagulação em casos de dúvida.", cond: "Lavar local com água e sabão, antissepsia, vacina antitetânica e analgesia simples." },
+            { id: "FICHA - 044", nome: "Fluoreto de Sódio (Flúor Odontológico)", sin: "Dor abdominal, vômitos cáusticos, tetania, hipocalcemia aguda severa, hipomagnesemia e arritmias ventriculares graves.", ex: "Cálcio iônico, magnésio, potássio e ECG.", cond: "Sais de cálcio VO (leite, carbonato). Gluconato de Cálcio 10% EV lento e Sulfato de Magnésio EV para estabilizar miocárdio." },
+            { id: "FICHA - 045", nome: "Produtos de Baixa Toxicidade (Giz, Lápis, Batom)", sin: "Assintomático ou leve irritação gástrica mecânica transitória.", ex: "Desnecessários.", cond: "Ofertar líquidos e tranquilizar os responsáveis." },
+            { id: "FICHA - 046", nome: "Desincrustantes / Ácido Oxálico", sin: "Queimadura química profunda na orofaringe, hematêmese, acidose metabólica grave, hipocalcemia aguda com tetania e choque.", ex: "Endoscopia precoce, gasometria e eletrólitos (cálcio).", cond: "Jejum absoluto, analgesia opioide, expansão venosa e reposição vigorosa de Gluconato de Cálcio EV." },
+            { id: "FICHA - 047", nome: "Detergentes Catiônicos / Amaciantes", sin: "Queimaduras corrosivas no trato digestivo, náuseas, vômitos, sialorreia, depressão do SNC e hipotensão arterial.", ex: "Endoscopia digestiva se concentração elevada (>5%).", cond: "Demulcentes orais (hidróxido de alumínio). Suporte ventilatório e hidratação venosa." },
+            { id: "FICHA - 049", nome: "Coagulantes / Ácido Épsilon-Aminocapróico (Ipsilon®)", sin: "Hipotensão severa e bradicardia se infusão rápida. Tromboses e necrose isquêmica tecidual.", ex: "ECG e coagulograma.", cond: "Suspender medicamento e suporte hemodinâmico com fluidos." },
+            { id: "FICHA - 050", nome: "Piretroides (SBP, K-Othrine, Baygon)", sin: "Parestesias em face e lábios, prurido, salivação, tremores, convulsões e prolongamento de intervalo QT no ECG.", ex: "ECG para avaliação de QT e glicemia.", cond: "Lavar pele com água e sabão. Carvão ativado se ingestão. Diazepam EV para controle de convulsões." },
+            { id: "FICHA - 051", nome: "Monóxido de Carbono (Fumaça / Incêndio)", sin: "Cefaleia latejante, náuseas, dispneia, confusão mental, síncope, convulsões e PCR por hipóxia anóxica tecidual.", ex: "Dosagem de Carboxihemoglobina (HbCO), gasometria e lactato.", cond: "Retirar da fonte. Oxigênio a 100% sob máscara com reservatório ou IOT até normalizar HbCO. Considerar câmara hiperbárica." },
+            { id: "FICHA - 053", "nome": "Aranha Caranguejeira", sin: "Picada com dor local discreta. Cerdas urticantes causam prurido intenso, pápulas eritematosas e conjuntivite.", ex: "Avaliação clínica.", cond: "Lavagem com água e sabão. Anti-histamínicos e pomadas de corticoide." },
+            { id: "FICHA - 054", nome: "Mercúrio (Termômetro / Sais Inorgânicos)", sin: "Termômetro quebrado é atóxico no TGI íntegro. Vapores ou sais inorgânicos causam pneumonite química, estomatite e LRA.", ex: "Dosagem urinária de mercúrio e função renal.", cond: "Para termômetro: tranquilizar. Sais: Dimercaprol (BAL) IM 3 a 5 mg/kg a cada 4h." },
+            { id: "FICHA - 056", nome: "Organoclorados (BHC, Aldrin, DDT)", sin: "Parestesia perioral, hiperexcitabilidade, tremores generalizados, crises convulsivas epileptiformes de repetição e arritmias.", ex: "Eletrólitos, ECG contínuo e gasometria.", cond: "Descontaminação da pele. Carvão ativado seriado. Diazepam EV em altas doses para convulsões. Contraindicado epinefrina." },
+            { id: "FICHA - 057", nome: "Organofosforados e Carbamatos (Chumbinho)", sin: "Síndrome Colinérgica: Miose pontual, broncorreia severa, broncoespasmo, bradicardia, sialorreia, fasciculações e paralisia.", ex: "Colinesterase eritrocitária, gasometria e ECG.", cond: "Paramentação da equipe. Descontaminação cutânea. Antídoto: Atropina 1 a 4 mg EV bolus (dobrar a cada 5-10 min até secar pulmão). Pralidoxima se organofosforado." },
+            { id: "FICHA - 058", nome: "Opioides (Morfina, Fentanil, Metadona, Tramadol)", sin: "Tríade clássica: Miose pupilar pontiforme, Coma e Depressão respiratória severa (bradipneia/apneia). Hipotermia.", ex: "Gasometria arterial e glicemia.", cond: "Garantir ventilação invasiva/máscara. Antídoto: Naloxona 0,4 a 2 mg EV a cada 2-3 min até normalizar frequência respiratória." },
+            { id: "FICHA - 059", nome: "Derivados de Petróleo (Querosene, Gasolina, Varsol)", sin: "Aspiração respiratória gera pneumonia química grave, tosse sufocante, taquipneia, febre e hipoxemia. Ingestão causa coma.", ex: "RX de tórax imediato e controle após 6h, gasometria arterial.", cond: "NÃO induzir vômito nem lavagem gástrica (risco extremo de aspiração). Oxigênio e suporte ventilatório." },
+            { id: "FICHA - 060", nome: "Antieméticos (Metoclopramida / Plasil®, Bromoprida)", sin: "Reação extrapiramidal / distonia aguda: trismo, crise oculógira, espasmos faciais e torcicolo súbito.", ex: "Avaliação clínica.", cond: "Antídoto: Biperideno (Akineton®) 3 a 5 mg EV/IM (0,06 a 0,1 mg/kg em crianças) com melhora rápida." },
+            { id: "FICHA - 066", nome: "Taturanas Urticantes / Lonomia sp.", sin: "Dor em queimação local. Gênero Lonomia causa síndrome hemorrágica sistêmica (gengivorragia, equimoses, hematúria) e LRA.", ex: "Tempo de Coagulação (TC), TAP, TPTA, hemograma e creatinina.", cond: "Compressas frias e anestésico local. Se acidente por Lonomia com coagulopatia: Soro Antilonômico (SALon) EV (5 a 10 ampolas)." },
+            { id: "FICHA - 068", nome: "Sulfato Ferroso (Intoxicação por Ferro)", sin: "Fase 1: vômitos e diarreia hemorrágicos. Fase 2: melhora aparente (6-24h). Fase 3: choque circulatório, acidose metabólica grave e falência renal.", ex: "Ferro sérico, gasometria e RX de abdômen.", cond: "Lavagem precoce com SF. Carvão ativado ineficaz. Antídoto: Deferoxamina (Desferal®) EV em infusão contínua de 15 mg/kg/h." },
+            { id: "FICHA - 078", nome: "Cobra - Lachesis (Surucucu Pico-de-Jaca)", sin: "Dor e necrose tecidual extensas associadas à Síndrome Vagal intensa: bradicardia, hipotensão arterial grave, diarreia profusa e cólicas.", ex: "Tempo de coagulação, hemograma, ureia e creatinina.", cond: "Expansão volêmica vigorosa. Soro Antilaquético (SAL) EV: Moderado = 10 amp; Grave = 20 amp." },
+            { id: "FICHA - 079", nome: "Metanol (Álcool Metílico / Solvente)", sin: "Período assintomático de 12-24h seguido por vômitos, acidose metabólica grave, borramento visual e cegueira permanente.", ex: "Gasometria arterial, eletrólitos, amilase e dosagem de formato.", cond: "Bicarbonato EV. Antídoto: Etanol a 10% EV (ataque 0,8 g/kg) ou Fomepizol. Ácido Folínico (Leucovorin 50mg EV 6/6h). Hemodiálise." },
+            { id: "FICHA - 098", nome: "Caravelas e Águas-Vivas (Cnidários)", sin: "Dor queimante violenta imediata com lesões lineares eritematosas e bolhas. Risco de choque anafilático.", ex: "Monitorização de sinais vitais.", cond: "NUNCA usar água doce. Lavar profusamente com ÁGUA DO MAR ou VINAGRE (Ácido Acético 5%) por 30 minutos contínuos. Retirar tentáculos com pinça." },
+            { id: "FICHA - 099", nome: "Betabloqueadores (Propranolol, Metoprolol, Atenolol)", sin: "Bradicardia sinusal severa, bloqueio atrioventricular (BAV), hipotensão refratária, choque cardiogênico e convulsões.", ex: "ECG contínuo, glicemia e eletrólitos.", cond: "Atropina 0,5 a 2 mg EV. Antídoto principal: Glucagon 5 a 10 mg EV em bolus seguido de infusão contínua (1 a 5 mg/h)." },
+            { id: "FICHA - 135", nome: "Sapos Venenosos (Bufo spp. / Bufotoxinas)", sin: "Toxinas com ação digitálica. Salivação, náuseas, bradicardia grave, BAV de alto grau, fibrilação ventricular e hipercalemia.", ex: "ECG contínuo e potássio sérico.", cond: "Lavar cavidade oral. Atropina EV para bradicardia. Fenitoína para arritmias ventriculares. Contraindicado Gluconato de Cálcio." }
         ];
 
-        // 25 PRESCRIÇÕES HOSPITALARES
-        const bancoPrescricoesCompleto = [
+        // Tabela Completa de Antídotos
+        const antidotosData = [
+            { nome: "N-Acetilcisteína (NAC)", ap: "Ampolas 300 / 400 mg (10%)", ind: "Paracetamol (Acetaminofeno)", dose: "Ataque: 150 mg/kg em 200 ml SG 5% em 1h. Manutenção: 50 mg/kg em 4h e 100 mg/kg nas 16h seguintes." },
+            { nome: "Atropina", ap: "Ampola 0,25 mg / 1 ml", ind: "Organofosforados e Carbamatos (Chumbinho)", dose: "Adulto: 1 a 4 mg EV em bolus. Criança: 0,02 a 0,05 mg/kg. Dobrar a dose a cada 5-10 min até atropinização (secar secreções pulmonares)." },
+            { nome: "Naloxona", ap: "Ampola 0,4 mg / 1 ml", ind: "Opioides (Morfina, Fentanil, Tramadol, Heroína)", dose: "0,4 a 2,0 mg EV/IM a cada 2-3 minutos até normalizar o padrão respiratório (máximo 10 mg)." },
+            { nome: "Flumazenil", ap: "Ampola 0,5 mg / 5 ml", ind: "Benzodiazepínicos (Reversão de coma isolado)", dose: "Adulto: 0,2 a 0,3 mg EV lento em 30s. Repetir 0,1 mg a cada 60s até máx 3 mg. Criança: 0,01 mg/kg." },
+            { nome: "Biperideno (Akineton®)", ap: "Ampola 5 mg / 1 ml", ind: "Síndrome Extrapiramidal / Distonia por Neurolépticos/Plasil", dose: "Adulto: 3 a 5 mg IM ou EV lento a cada 4-6h. Criança: 0,06 a 0,1 mg/kg/dose." },
+            { nome: "Bicarbonato de Sódio 8,4%", ap: "Ampola 10 ml a 8,4% (1 mEq/ml)", ind: "Antidepressivos Tricíclicos (QRS largo >100ms) / Alcalinização", dose: "1 a 2 mEq/kg EV em bolus rápido até estreitar QRS (<100 ms) e elevar pH arterial para 7,45-7,55." },
+            { nome: "Azul de Metileno 1%", ap: "Ampola 5 ml a 1%", ind: "Metemoglobinemia tóxica (Dapsona, Prilocaína, Anilinas)", dose: "1 a 2 mg/kg EV em infusão lenta de 5 minutos. Pode ser repetido após 1h se MetHb > 30%." },
+            { nome: "Vitamina K1 (Fitomenadiona)", ap: "Ampola 10 mg / 1 ml", ind: "Raticidas Cumarínicos e Varfarina", dose: "Adulto: 10 a 25 mg IM ou EV diluída lenta. Criança: 1 a 5 mg. Repetir conforme controle de TAP/INR." },
+            { nome: "Carvão Ativado", ap: "Pó para suspensão oral", ind: "Descontaminação gastrointestinal geral", dose: "1 a 2 g/kg de peso diluído em água ou soro fisiológico / manitol VO ou por SNG." },
+            { nome: "Deferoxamina (Desferal®)", ap: "Ampola 500 mg", ind: "Intoxicação aguda grave por Ferro", dose: "Ataque: 90 mg/kg IM (máx 1g). Casos graves com choque: infusão contínua de 15 mg/kg/h EV." },
+            { nome: "Dimercaprol (BAL)", ap: "Ampola 100 mg / 1 ml", ind: "Mercúrio inorgânico, Arsênico, Chumbo", dose: "3 a 5 mg/kg/dose IM a cada 4-6h por 2 dias; depois de 12/12h por 7 a 10 dias." },
+            { nome: "Etanol Absoluto / 10%", ap: "Solução EV ou oral a 30%", ind: "Metanol e Etilenoglicol", dose: "Ataque: 0,8 g/kg. Manutenção: 130 mg/kg/h (aumentar para 250-350 mg/kg/h se em hemodiálise)." },
+            { nome: "Hidroxocobalamina", ap: "Ampola injetável", ind: "Intoxicação por Cianeto (Fumaça de incêndio)", dose: "Adulto: 5 g EV em 15 minutos (ou 70 mg/kg em crianças)." },
+            { nome: "Pralidoxima (Contrathion®)", ap: "Ampola 200 mg", ind: "Organofosforados (Reativador da Acetilcolinesterase)", dose: "Adulto: 1 a 2 g EV em 10 minutos. Manutenção: 200 a 500 mg/h em BIC." },
+            { nome: "Glucagon", ap: "Ampola 1 mg", ind: "Intoxicação grave por Betabloqueadores", dose: "5 a 10 mg EV em bolus em 1 minuto, seguido de infusão contínua de 1 a 5 mg/h." }
+        ];
+
+        // Animais Peçonhentos
+        const peconhaData = [
+            { nome: "Bothrops (Jararaca, Urutu)", tipo: "Botrópico", quadro: "Ação Proteolítica, Coagulante e Hemorrágica. Dor, edema indurado e equimose locais. Bolhas necróticas e gengivorragia. Risco de choque e insuficiência renal aguda.", conduta: "Lavar local com água e sabão. Membro elevado. Analgesia.\n• Leve: 2 a 4 ampolas de Soro Antibotrópico (SAB) EV.\n• Moderado: 5 a 8 ampolas de SAB EV.\n• Grave: 12 ampolas de SAB EV." },
+            { nome: "Crotalus (Cascavel)", tipo: "Crotálico", quadro: "Ação Neurotóxica e Miotóxica. Edema local mínimo com parestesia. Fácies neurotóxica (ptose palpebral, diplopia), mialgia generalizada e urina escura cor de refrigerante de cola.", conduta: "Hidratação venosa vigorosa imediata (manter diurese clara >1-2 ml/kg/h).\n• Moderado: 10 ampolas de Soro Anticrotálico (SAC) EV.\n• Grave: 20 ampolas de SAC EV." },
+            { nome: "Lachesis (Surucucu Pico-de-Jaca)", tipo: "Laquético", quadro: "Ação Proteolítica, Coagulante, Hemorrágica e Neurotóxica Vagal. Dor e necrose extensas associadas a manifestações vagais intensas (bradicardia, hipotensão, diarreia profusa).", conduta: "Expansão volêmica vigorosa e combate ao choque.\n• Moderado: 10 ampolas de Soro Antilaquético (SAL) EV.\n• Grave: 20 ampolas de SAL EV." },
+            { nome: "Micrurus (Coral-Verdadeira)", tipo: "Elapídico", quadro: "Ação Neurotóxica pré e pós-sináptica. Sem sinais locais. Ptose palpebral, diplopia, salivação, paralisia de membros e parada respiratória por paralisia diafragmática.", conduta: "TODO CASO É CONSIDERADO GRAVE.\n• Soro Antielapídico (SAEl) EV: 10 ampolas.\n• Suporte ventilatório imediato (IOT).\n• Teste com Neostigmina + Atropina." },
+            { nome: "Escorpião (Tityus stigmurus / serrulatus)", tipo: "Escorpiões", quadro: "Leve: dor local intensa e queimação. Moderado/Grave (crianças): vômitos profusos, sudorese generalizada, sialorreia, hipertensão/hipotensão, edema pulmonar e choque.", conduta: "Bloqueio anestésico com Lidocaína 2% sem vasoconstritor.\n• Moderado: 2 a 4 ampolas de Soro Antiescorpiônico EV.\n• Grave: 4 a 6 ampolas de Soro Antiescorpiônico EV." },
+            { nome: "Aranha Marrom (Loxosceles sp.)", tipo: "Aranhas", quadro: "Picada pouco dolorosa. Após 12-24h: placa marmórea com necrose central. Forma cutâneo-visceral: hemólise intravascular maciça, icterícia e insuficiência renal aguda.", conduta: "Prednisona 0,5-1 mg/kg/dia, Dapsona 100 mg/dia.\n• Cutâneo Grave: 5 ampolas de Soro Antiloxoscélico / Antiaraquídico EV.\n• Cutâneo-Visceral: 10 ampolas de Soro EV." },
+            { nome: "Aranha Armadeira (Phoneutria nigriventer)", tipo: "Aranhas", quadro: "Dor lancinante imediata irradiando para o membro. Casos graves: agitação, sialorreia, priapismo, arritmias, edema agudo de pulmão e choque neurogênico.", conduta: "Infiltração anestésica com Lidocaína 2% sem vasoconstritor.\n• Moderado: 2 a 4 ampolas de Soro Antiaraquídico (SAA) EV.\n• Grave: 5 a 10 ampolas de SAA EV." },
+            { nome: "Caravelas e Águas-Vivas (Cnidários)", tipo: "Marinhos", quadro: "Dor queimante imediata, lesões lineares urticariformes e bolhas. Risco de espasmos musculares sistêmicos e anafilaxia.", conduta: "NUNCA usar água doce. Lavar profusamente com ÁGUA DO MAR ou VINAGRE (Ácido Acético 5%) por 30 minutos contínuos. Retirar tentáculos com pinça." }
+        ];
+
+        // Diretrizes DM & HAS
+        const dmhasData = [
+            { titulo: "🩸 DIABETES MELLITUS: Etapas de Intensificação (1 a 4)", cat: "DM Terapêutica", txt: "• Etapa 1: NPH ou Lantus DU 0,2 U/kg/dia ao deitar + Agentes Orais. Se Glicemia de Jejum (GJ) sem meta: aumentar 2-4U a cada 3 dias (preferir +4U se GJ > 180 mg/dL ou aumentar 20% da NPH). Se hipoglicemia: reduzir 4U ou 10% da dose ao deitar. (Dose Lantus = Dose NPH x 0.8).\n• Etapa 2: Pico pós-prandial detectado: Associar NPH + Insulina Rápida (IR) no almoço.\n• Etapa 3: Pico pós-prandial em mais de uma refeição: Iniciar 2ª dose de NPH com 4U, depois aumentar 2U a cada 3 dias.\n• Etapa 4: Sem resposta adequada: Progredir para 2 NPH + 3 IR (Opção: 3 doses de NPH)." },
+            { titulo: "🩸 DIABETES MELLITUS: Ajustes de Glicemia por HGT", cat: "DM Monitorização", txt: "• Rotina: HGTs em jejum, antes do almoço, antes do jantar e ao deitar.\n• GJ Aumentada Antes do Almoço: Adicionar Insulina Rápida (IR) antes do café da manhã.\n• GJ Aumentada Antes do Jantar: Adicionar NPH antes do café da manhã OU Insulina Rápida (IR) antes do almoço.\n• Controle Trimestral: Avaliar HbA1c a cada 3 meses. Se HbA1c > 7%, alterar o esquema terapêutico." },
+            { titulo: "🫀 HIPERTENSÃO ARTERIAL (HAS): Estratégia e Progressão (1 a 4)", cat: "HAS Estratégia", txt: "• Etapa 1: Grau 1 com baixo risco CV: monoterapia de 1ª linha. Grau 1 alto risco ou Graus 2/3: associação de 2 drogas de 1ª linha de classes diferentes.\n• Etapa 2: Aumentar doses até alvo da PA. Se refratário a duas drogas em dose máxima tolerada, associar 3ª classe de 1ª linha (Tiazídico + BCC + IECA/BRA).\n• Etapa 3: Se fora do alvo apesar de 3 drogas, adicionar Espironolactona (25 a 50 mg/dia) como 4ª droga.\n• Etapa 4: Hipertensão refratária com 4 drogas: adicionar sequencialmente drogas de 2ª linha.\n⚠️ Regra de Ouro: NUNCA associar IECA (Captopril/Enalapril) e BRA (Losartana/Valsartana)." },
+            { titulo: "🫀 HIPERTENSÃO ARTERIAL (HAS): Arsenal Terapêutico (Doses)", cat: "HAS Fármacos", txt: "Drogas de 1ª Linha:\n- Enalapril: 5-40 mg/dia VO (1-2x/dia)\n- Captopril: 25-150 mg/dia VO (2-3x/dia)\n- Losartana: 25-100 mg/dia VO (1-2x/dia)\n- Hidroclorotiazida: 12,5-25 mg VO 1x/dia\n- Anlodipino: 2,5-10 mg VO 1x/dia\n- Espironolactona: 25-200 mg/dia VO 1x/dia\n\nDrogas de 2ª Linha:\n- Atenolol: 25-100 mg/dia VO 12/12h\n- Carvedilol: 12,5-50 mg/dia VO 12/12h\n- Propranolol: 40-160 mg/dia VO até 6/6h (máx 640mg)\n- Hidralazina: 25-50 mg/dia VO de 8/8h\n- Furosemida: 20-80 mg/dia VO (de 12/12h até 6/6h)." },
+            { titulo: "🫀 HIPERTENSÃO ARTERIAL (HAS): Populações Especiais", cat: "HAS Populações", txt: "• Raça Negra: Tiazídicos e BCC (Anlodipino).\n• Idosos: Tiazídicos + Betabloqueadores; IECA; BRA; BCC.\n• Gestantes: Alfa Metildopa (1ª escolha), Hidralazina. Contraindicados IECA e BRA.\n• Diabetes Mellitus / Nefropatas: IECA e BRA (nefroproteção).\n• Pós-IAM: IECA e Betabloqueadores.\n• Pós-AVC Isquêmico: Tiazídicos, IECA e BRA.\n• IC Sistólica: IECA, BRA, Betabloqueadores, Espironolactona." },
+            { titulo: "🌿 TRATAMENTO NÃO MEDICAMENTOSO (HAS & DCV)", cat: "HAS Não-Med", txt: "• Perda de Peso: Manter IMC normal (entre 18,5-24,9 kg/m²).\n• Dieta: Rica em frutas e vegetais, baixo teor de gorduras saturadas.\n• Sódio: Restrição para ≤ 2 g/dia de sódio (6 g de sal/dia).\n• Atividade Física: Exercício aeróbico regular por pelo menos 30 min diários.\n• Álcool: Consumo moderado (<30 mL/dia de etanol).\n• Tabagismo: Cessação total." }
+        ];
+
+        // 25 Prescrições Hospitalares
+        const prescricoesData = [
             { titulo: "Drogas de Urgência Injetáveis Pediátricas", cat: "Peds Urgência", txt: "- Decadron: Peso/20 IM ou Peso/25 IM\n- Dipirona (1000mg/2ml): Peso/20 IM\n- Ondansetrona: Peso/20 ml IM\n- Dramin/Bromoprida/Buscopan/Plasil: Peso/30 IM\n- Prometazina: Peso/50 ml IM\n- Adrenalina (PCR): 1 amp + 9ml ABD -> 0,1 ml/kg IV\n- Adrenalina (Anafilaxia): 0,01 ml/kg IM no vasto lateral (máx 0,3ml)\n- Diazepam (2ml/10mg): 0,04 ml/kg IV ou retal 0,06 ml/kg\n- Fenitoína (Hidantal): 0,3 ml/kg EV diluído em SF em 30 min" },
             { titulo: "Hidratação Venosa Pediátrica (Fase Rápida e Manutenção)", cat: "Pediatria", txt: "1ª Fase (Rápida - 1h): SG 25ml/kg + SF 25ml/kg EV (16 gts/kg/min).\n2ª Fase (Lenta - 24h): Lactente = 150ml/kg/dia | Criança = 120ml/kg/dia.\nSolução: SG ¾ + SF ¼ + KCl 19,1% 1ml a cada 100ml. Dividir em 3 etapas de 8h." },
             { titulo: "Terapia de Reidratação Oral (TRO)", cat: "Pediatria", txt: "Volume: 50 a 100 ml/kg de SRO em 4 a 6 horas.\nCálculo Rápido nas 4h: Peso (kg) x 75 ml." },
@@ -906,26 +236,26 @@
             { titulo: "Crise Hipertensiva", cat: "Urgência", txt: "Captopril 25mg VO (repetir em 1h SN). Resistente: Clonidina 0,1 a 0,2mg VO. Emergência: Hidralazina 1 amp EV." }
         ];
 
-        // RENDERIZAR GUIA
-        function renderGuia() {
-            // 1. Fichas Tox Completas
-            document.getElementById('lista-fichas').innerHTML = fichasDataCompleto.map(f => `
-                <div class="card-item bg-white p-3.5 rounded-2xl border border-gray-200 cursor-pointer hover:border-rose-300" onclick="openModal('${f.nome}', '${f.id}', '🚨 *Sintomas:* ${f.sintomas}\\n\\n🔬 *Exames:* ${f.exames}\\n\\n💉 *Tratamento:* ${f.tratamento}')">
+        // Renderização dos Cards
+        function renderizarGuia() {
+            // 1. Fichas
+            document.getElementById('lista-fichas').innerHTML = fichasTox.map(f => `
+                <div class="card-item bg-white p-3.5 rounded-2xl border border-gray-200 cursor-pointer hover:border-rose-300 transition-all shadow-sm" onclick="abrirModal('${f.nome}', '${f.id}', '🚨 *Sintomas:* ${f.sin}\\n\\n🔬 *Exames:* ${f.ex}\\n\\n💉 *Conduta:* ${f.cond}')">
                     <div class="flex justify-between items-center mb-1">
                         <span class="text-[9px] font-black text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full">${f.id}</span>
                         <span class="text-gray-400 text-[10px]">Ver ficha ➔</span>
                     </div>
                     <h4 class="text-xs font-bold text-gray-900">${f.nome}</h4>
-                    <p class="text-[11px] text-gray-500 line-clamp-1 mt-0.5">${f.sintomas}</p>
+                    <p class="text-[11px] text-gray-500 line-clamp-1 mt-0.5">${f.sin}</p>
                 </div>
             `).join('');
 
-            // 2. Antídotos Completos
-            document.getElementById('lista-antidotos').innerHTML = antidotosDataCompleto.map(a => `
-                <div class="card-item bg-white p-3.5 rounded-2xl border border-gray-200 cursor-pointer hover:border-emerald-300" onclick="openModal('${a.nome}', 'ANTÍDOTO', '📦 *Apresentação:* ${a.ap}\\n\\n🎯 *Indicação:* ${a.ind}\\n\\n💊 *Posologia:* ${a.dose}')">
+            // 2. Antídotos
+            document.getElementById('lista-antidotos').innerHTML = antidotosData.map(a => `
+                <div class="card-item bg-white p-3.5 rounded-2xl border border-gray-200 cursor-pointer hover:border-emerald-300 transition-all shadow-sm" onclick="abrirModal('${a.nome}', 'ANTÍDOTO', '📦 *Apresentação:* ${a.ap}\\n\\n🎯 *Indicação:* ${a.ind}\\n\\n💊 *Posologia:* ${a.dose}')">
                     <div class="flex justify-between items-center mb-1">
                         <span class="text-[9px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">${a.ap}</span>
-                        <span class="text-gray-400 text-[10px]">Ver conduta ➔</span>
+                        <span class="text-gray-400 text-[10px]">Ver posologia ➔</span>
                     </div>
                     <h4 class="text-xs font-bold text-gray-900">${a.nome}</h4>
                     <p class="text-[11px] text-indigo-900 font-semibold">${a.ind}</p>
@@ -933,8 +263,8 @@
             `).join('');
 
             // 3. Peçonhentos
-            document.getElementById('lista-peconha').innerHTML = peconhaDataCompleto.map(p => `
-                <div class="card-item bg-white p-3.5 rounded-2xl border border-gray-200 cursor-pointer hover:border-amber-300" onclick="openModal('${p.nome}', '${p.tipo}', '🔍 *Quadro Clínico:*\\n${p.quadro}\\n\\n📋 *Conduta & Soroterapia:*\\n${p.conduta}')">
+            document.getElementById('lista-peconha').innerHTML = peconhaData.map(p => `
+                <div class="card-item bg-white p-3.5 rounded-2xl border border-gray-200 cursor-pointer hover:border-amber-300 transition-all shadow-sm" onclick="abrirModal('${p.nome}', '${p.tipo}', '🔍 *Quadro Clínico:*\\n${p.quadro}\\n\\n📋 *Conduta & Soroterapia:*\\n${p.conduta}')">
                     <div class="flex justify-between items-center mb-1">
                         <span class="text-[9px] font-black uppercase text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">${p.tipo}</span>
                         <span class="text-gray-400 text-[10px]">Ver conduta ➔</span>
@@ -944,9 +274,9 @@
                 </div>
             `).join('');
 
-            // 4. DM & HAS Completo
-            document.getElementById('lista-dmhas').innerHTML = dmhasDataCompleto.map(d => `
-                <div class="card-item bg-white p-4 rounded-2xl border border-purple-100 shadow-sm cursor-pointer hover:border-purple-300" onclick="openModal('${d.titulo}', '${d.cat}', '${d.txt.replace(/\n/g, '\\n')}')">
+            // 4. DM & HAS
+            document.getElementById('lista-dmhas').innerHTML = dmhasData.map(d => `
+                <div class="card-item bg-white p-4 rounded-2xl border border-purple-100 shadow-sm cursor-pointer hover:border-purple-300 transition-all" onclick="abrirModal('${d.titulo}', '${d.cat}', '${d.txt.replace(/\n/g, '\\n')}')">
                     <div class="flex justify-between items-center mb-1">
                         <span class="text-[9px] font-black uppercase text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full">${d.cat}</span>
                         <span class="text-gray-400 text-[10px]">Ver diretriz ➔</span>
@@ -957,8 +287,8 @@
             `).join('');
 
             // 5. Prescrições
-            document.getElementById('lista-prescricoes').innerHTML = bancoPrescricoesCompleto.map(p => `
-                <div class="card-item bg-white p-4 rounded-2xl border border-gray-200 shadow-sm cursor-pointer hover:border-blue-300" onclick="openModal('${p.titulo}', '${p.cat}', '${p.txt.replace(/\n/g, '\\n')}')">
+            document.getElementById('lista-presc').innerHTML = prescricoesData.map(p => `
+                <div class="card-item bg-white p-4 rounded-2xl border border-gray-200 shadow-sm cursor-pointer hover:border-blue-300 transition-all" onclick="abrirModal('${p.titulo}', '${p.cat}', '${p.txt.replace(/\n/g, '\\n')}')">
                     <div class="flex justify-between items-center mb-1">
                         <span class="text-[9px] font-black uppercase text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">${p.cat}</span>
                         <span class="text-gray-400 text-[10px]">Ver conduta ➔</span>
@@ -969,102 +299,41 @@
             `).join('');
         }
 
-       <!-- MODAL DE DETALHES DO GUIA -->
-    <div id="detailModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end justify-center sm:items-center p-0 sm:p-4">
-        <div class="bg-white rounded-t-3xl sm:rounded-3xl max-w-md w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
-            <div class="p-3.5 border-b border-gray-100 flex items-center justify-between bg-slate-50">
-                <span id="modalCategory" class="text-[10px] font-black uppercase text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full">--</span>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-700 text-lg font-bold p-1">✕</button>
-            </div>
-            <div class="p-4 overflow-y-auto space-y-3 text-xs leading-relaxed" id="modalBody"></div>
-            <div class="p-3 border-t bg-gray-50 flex gap-2">
-                <button id="btnEnviarChat" onclick="compartilharModal()" class="flex-1 py-3 bg-indigo-700 hover:bg-indigo-800 active:scale-95 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm">
-                    <span id="lblEnviar">📤 Enviar ao Telegram</span>
-                </button>
-                <button onclick="copiarTextoModal()" title="Copiar para colar no chat" class="px-4 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition-all">
-                    📋 Copiar
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- SCRIPT DE EXECUÇÃO -->
-    <script>
-        let modalText = "";
-
-        function openModal(title, cat, body) {
+        // Modal
+        function abrirModal(titulo, cat, corpo) {
             document.getElementById('modalCategory').innerText = cat;
-            document.getElementById('modalBody').innerHTML = `<h3 class="text-sm font-black text-gray-900">${title}</h3><div class="text-gray-700 whitespace-pre-line mt-2">${body}</div>`;
-            modalText = `📋 *${title}* (${cat})\n\n${body}`;
-            
-            const lbl = document.getElementById('lblEnviar');
-            if (lbl) lbl.innerText = "📤 Enviar ao Telegram";
-            const btn = document.getElementById('btnEnviarChat');
-            if (btn) btn.className = "flex-1 py-3 bg-indigo-700 hover:bg-indigo-800 active:scale-95 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm";
-            
+            document.getElementById('modalBody').innerHTML = `<h3 class="text-sm font-black text-gray-900">${titulo}</h3><div class="text-gray-700 whitespace-pre-line mt-2">${corpo}</div>`;
+            textoModalAtivo = `📋 *${titulo}* (${cat})\n\n${corpo}`;
+            document.getElementById('btnEnviar').innerText = "📤 Enviar ao Telegram";
             document.getElementById('detailModal').classList.remove('hidden');
         }
 
-        function closeModal() { 
-            document.getElementById('detailModal').classList.add('hidden'); 
-        }
+        function fecharModal() { document.getElementById('detailModal').classList.add('hidden'); }
 
-        function compartilharModal() {
-            if (!modalText) return;
-
-            let enviadoViaTg = false;
-
-            // 1. Tenta envio nativo do Telegram Web App
-            if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.sendData === 'function') {
-                try {
-                    const safeText = modalText.length > 3800 ? modalText.substring(0, 3800) + "\n...[texto truncado]" : modalText;
-                    window.Telegram.WebApp.sendData(safeText);
-                    enviadoViaTg = true;
-                } catch (e) {
-                    console.warn("sendData indisponível ou bloqueado por abertura via Menu Button:", e);
-                }
-            }
-
-            // 2. Garante cópia na área de transferência e aciona fallback de compartilhamento se sendData falhar
-            copiarTextoModal();
-
-            if (!enviadoViaTg) {
-                const tgShareUrl = `https://t.me/share/url?url=${encodeURIComponent(modalText)}`;
-                if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
-                    window.Telegram.WebApp.openTelegramLink(tgShareUrl);
-                } else {
-                    window.open(tgShareUrl, '_blank');
-                }
-            }
-        }
-
-        function copiarTextoModal() {
-            if (!modalText) return;
-
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(modalText).then(() => {
-                    const lbl = document.getElementById('lblEnviar');
-                    if (lbl) lbl.innerText = "✅ Copiado / Encaminhando...";
-                }).catch(() => {
-                    fallbackCopiar(modalText);
+        function copiarConduta() {
+            if (!textoModalAtivo) return;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(textoModalAtivo).then(() => {
+                    document.getElementById('btnEnviar').innerText = "✅ Copiado!";
                 });
-            } else {
-                fallbackCopiar(modalText);
             }
         }
 
-        function fallbackCopiar(texto) {
-            const temp = document.createElement("textarea");
-            temp.value = texto;
-            document.body.appendChild(temp);
-            temp.select();
-            document.execCommand("copy");
-            document.body.removeChild(temp);
-            const lbl = document.getElementById('lblEnviar');
-            if (lbl) lbl.innerText = "✅ Copiado!";
+        function enviarCondutaChat() {
+            if (!textoModalAtivo) return;
+            let enviado = false;
+            if (tg && typeof tg.sendData === 'function') {
+                try { tg.sendData(textoModalAtivo); enviado = true; } catch(e) {}
+            }
+            copiarConduta();
+            if (!enviado) {
+                const url = `https://t.me/share/url?url=${encodeURIComponent(textoModalAtivo)}`;
+                if (tg && tg.openTelegramLink) tg.openTelegramLink(url);
+                else window.open(url, '_blank');
+            }
         }
 
-        function filtrarGuia() {
+        function filtrarConteudo() {
             const q = document.getElementById('globalSearch').value.toLowerCase();
             document.querySelectorAll('.card-item').forEach(c => {
                 c.style.display = c.textContent.toLowerCase().includes(q) ? 'block' : 'none';
@@ -1072,11 +341,8 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            renderGuia();
-            calcularDieta();
-            calcGlasgow();
-            calcApgar();
-            calcularLipidios();
-            calcularAlcool();
+            renderizarGuia();
         });
     </script>
+</body>
+</html>
