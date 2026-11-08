@@ -236,14 +236,14 @@
             { titulo: "Crise Hipertensiva", cat: "Urgência", txt: "Captopril 25mg VO (repetir em 1h SN). Resistente: Clonidina 0,1 a 0,2mg VO. Emergência: Hidralazina 1 amp EV." }
         ];
 
-        // Renderização dos Cards
+       // RENDERIZAÇÃO 100% BLINDADA CONTRA ERROS DE SINTAXE E QUEBRA DE LINHA
         function renderizarGuia() {
             // 1. Fichas
-            document.getElementById('lista-fichas').innerHTML = fichasTox.map(f => `
-                <div class="card-item bg-white p-3.5 rounded-2xl border border-gray-200 cursor-pointer hover:border-rose-300 transition-all shadow-sm" onclick="abrirModal('${f.nome}', '${f.id}', '🚨 *Sintomas:* ${f.sin}\\n\\n🔬 *Exames:* ${f.ex}\\n\\n💉 *Conduta:* ${f.cond}')">
-                    <div class="flex justify-between items-center mb-1">
+            document.getElementById('lista-fichas').innerHTML = fichasTox.map((f, i) => `
+                <div class="card-guia bg-white p-3.5 rounded-2xl border border-gray-200 cursor-pointer hover:border-rose-300 transition-all shadow-sm" onclick="abrirModalPorIndice('ficha', ${i})">
+                    <div class="flex justify-between items-center mb-1.5">
                         <span class="text-[9px] font-black text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full">${f.id}</span>
-                        <span class="text-gray-400 text-[10px]">Ver ficha ➔</span>
+                        <span class="text-rose-700 bg-rose-50 border border-rose-100 text-[10px] font-bold px-2 py-0.5 rounded-full">Ver ficha ➔</span>
                     </div>
                     <h4 class="text-xs font-bold text-gray-900">${f.nome}</h4>
                     <p class="text-[11px] text-gray-500 line-clamp-1 mt-0.5">${f.sin}</p>
@@ -251,37 +251,37 @@
             `).join('');
 
             // 2. Antídotos
-            document.getElementById('lista-antidotos').innerHTML = antidotosData.map(a => `
-                <div class="card-item bg-white p-3.5 rounded-2xl border border-gray-200 cursor-pointer hover:border-emerald-300 transition-all shadow-sm" onclick="abrirModal('${a.nome}', 'ANTÍDOTO', '📦 *Apresentação:* ${a.ap}\\n\\n🎯 *Indicação:* ${a.ind}\\n\\n💊 *Posologia:* ${a.dose}')">
-                    <div class="flex justify-between items-center mb-1">
+            document.getElementById('lista-antidotos').innerHTML = antidotosData.map((a, i) => `
+                <div class="card-guia bg-white p-3.5 rounded-2xl border border-gray-200 cursor-pointer hover:border-emerald-300 transition-all shadow-sm" onclick="abrirModalPorIndice('antidoto', ${i})">
+                    <div class="flex justify-between items-center mb-1.5">
                         <span class="text-[9px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">${a.ap}</span>
-                        <span class="text-gray-400 text-[10px]">Ver posologia ➔</span>
+                        <span class="text-emerald-700 bg-emerald-50 border border-emerald-100 text-[10px] font-bold px-2 py-0.5 rounded-full">Ver conduta ➔</span>
                     </div>
                     <h4 class="text-xs font-bold text-gray-900">${a.nome}</h4>
                     <p class="text-[11px] text-indigo-900 font-semibold">${a.ind}</p>
                 </div>
             `).join('');
 
-           // 3. Peçonhentos (Padronizado com tag e balão de ação em todos os cards)
-            document.getElementById('lista-peconha').innerHTML = peconhaData.map(p => `
-                <div class="card-guia bg-white p-3.5 rounded-2xl border border-gray-200 cursor-pointer hover:border-amber-300 transition-all shadow-sm" onclick="abrirModal('${p.nome}', '${p.tipo}', '🔍 *Quadro:*\\n${p.quadro.replace(/\n/g, '\\n')}\\n\\n📋 *Conduta:*\\n${p.conduta.replace(/\n/g, '\\n')}')">
+            // 3. Peçonhentos (TODOS OS BALÕES GARANTIDOS)
+            document.getElementById('lista-peconha').innerHTML = peconhaData.map((p, i) => `
+                <div class="card-guia bg-white p-3.5 rounded-2xl border border-gray-200 cursor-pointer hover:border-amber-300 transition-all shadow-sm" onclick="abrirModalPorIndice('peconha', ${i})">
                     <div class="flex justify-between items-center mb-1.5">
                         <span class="text-[9px] font-black uppercase text-amber-800 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full">${p.tipo}</span>
-                        <span class="text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 border border-amber-100">
+                        <span class="text-amber-800 bg-amber-50 border border-amber-200 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                             Ver conduta ➔
                         </span>
                     </div>
-                    <h4 class="text-xs font-black text-gray-900">${p.nome}</h4>
+                    <h4 class="text-xs font-bold text-gray-900">${p.nome}</h4>
                     <p class="text-[11px] text-gray-500 line-clamp-2 mt-1 leading-relaxed">${p.quadro}</p>
                 </div>
             `).join('');
 
             // 4. DM & HAS
-            document.getElementById('lista-dmhas').innerHTML = dmhasData.map(d => `
-                <div class="card-item bg-white p-4 rounded-2xl border border-purple-100 shadow-sm cursor-pointer hover:border-purple-300 transition-all" onclick="abrirModal('${d.titulo}', '${d.cat}', '${d.txt.replace(/\n/g, '\\n')}')">
-                    <div class="flex justify-between items-center mb-1">
+            document.getElementById('lista-dmhas').innerHTML = dmhasData.map((d, i) => `
+                <div class="card-guia bg-white p-4 rounded-2xl border border-purple-100 shadow-sm cursor-pointer hover:border-purple-300 transition-all" onclick="abrirModalPorIndice('dmhas', ${i})">
+                    <div class="flex justify-between items-center mb-1.5">
                         <span class="text-[9px] font-black uppercase text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full">${d.cat}</span>
-                        <span class="text-gray-400 text-[10px]">Ver diretriz ➔</span>
+                        <span class="text-purple-700 bg-purple-50 border border-purple-100 text-[10px] font-bold px-2 py-0.5 rounded-full">Ver diretriz ➔</span>
                     </div>
                     <h4 class="text-xs font-bold text-gray-900">${d.titulo}</h4>
                     <p class="text-[11px] text-gray-500 line-clamp-2 mt-1 whitespace-pre-line">${d.txt}</p>
@@ -289,11 +289,11 @@
             `).join('');
 
             // 5. Prescrições
-            document.getElementById('lista-presc').innerHTML = prescricoesData.map(p => `
-                <div class="card-item bg-white p-4 rounded-2xl border border-gray-200 shadow-sm cursor-pointer hover:border-blue-300 transition-all" onclick="abrirModal('${p.titulo}', '${p.cat}', '${p.txt.replace(/\n/g, '\\n')}')">
-                    <div class="flex justify-between items-center mb-1">
+            document.getElementById('lista-presc').innerHTML = prescricoesData.map((p, i) => `
+                <div class="card-guia bg-white p-4 rounded-2xl border border-gray-200 shadow-sm cursor-pointer hover:border-blue-300 transition-all" onclick="abrirModalPorIndice('prescricao', ${i})">
+                    <div class="flex justify-between items-center mb-1.5">
                         <span class="text-[9px] font-black uppercase text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">${p.cat}</span>
-                        <span class="text-gray-400 text-[10px]">Ver conduta ➔</span>
+                        <span class="text-blue-700 bg-blue-50 border border-blue-100 text-[10px] font-bold px-2 py-0.5 rounded-full">Ver conduta ➔</span>
                     </div>
                     <h4 class="text-xs font-bold text-gray-900">${p.titulo}</h4>
                     <p class="text-[11px] text-gray-500 line-clamp-2 mt-1 whitespace-pre-line">${p.txt}</p>
@@ -301,15 +301,43 @@
             `).join('');
         }
 
-        // Modal
-        function abrirModal(titulo, cat, corpo) {
+        // Nova Função de Abertura Segura do Modal (lê os dados limpos sem quebrar o HTML)
+        function abrirModalPorIndice(categoria, index) {
+            let titulo = "", cat = "", corpo = "";
+
+            if (categoria === 'ficha') {
+                const item = fichasTox[index];
+                titulo = item.nome;
+                cat = item.id;
+                corpo = `🚨 *Sintomas:* ${item.sin}\n\n🔬 *Exames:* ${item.ex}\n\n💉 *Conduta:* ${item.cond}`;
+            } else if (categoria === 'antidoto') {
+                const item = antidotosData[index];
+                titulo = item.nome;
+                cat = "ANTÍDOTO";
+                corpo = `📦 *Apresentação:* ${item.ap}\n\n🎯 *Indicação:* ${item.ind}\n\n💊 *Posologia:* ${item.dose}`;
+            } else if (categoria === 'peconha') {
+                const item = peconhaData[index];
+                titulo = item.nome;
+                cat = item.tipo;
+                corpo = `🔍 *Quadro Clínico:*\n${item.quadro}\n\n📋 *Conduta & Soroterapia:*\n${item.conduta}`;
+            } else if (categoria === 'dmhas') {
+                const item = dmhasData[index];
+                titulo = item.titulo;
+                cat = item.cat;
+                corpo = item.txt;
+            } else if (categoria === 'prescricao') {
+                const item = prescricoesData[index];
+                titulo = item.titulo;
+                cat = item.cat;
+                corpo = item.txt;
+            }
+
             document.getElementById('modalCategory').innerText = cat;
             document.getElementById('modalBody').innerHTML = `<h3 class="text-sm font-black text-gray-900">${titulo}</h3><div class="text-gray-700 whitespace-pre-line mt-2">${corpo}</div>`;
             textoModalAtivo = `📋 *${titulo}* (${cat})\n\n${corpo}`;
             document.getElementById('btnEnviar').innerText = "📤 Enviar ao Telegram";
             document.getElementById('detailModal').classList.remove('hidden');
         }
-
         function fecharModal() { document.getElementById('detailModal').classList.add('hidden'); }
 
         function copiarConduta() {
