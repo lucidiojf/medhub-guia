@@ -262,15 +262,17 @@
                 </div>
             `).join('');
 
-            // 3. Peçonhentos
+           // 3. Peçonhentos (Padronizado com tag e balão de ação em todos os cards)
             document.getElementById('lista-peconha').innerHTML = peconhaData.map(p => `
-                <div class="card-item bg-white p-3.5 rounded-2xl border border-gray-200 cursor-pointer hover:border-amber-300 transition-all shadow-sm" onclick="abrirModal('${p.nome}', '${p.tipo}', '🔍 *Quadro Clínico:*\\n${p.quadro}\\n\\n📋 *Conduta & Soroterapia:*\\n${p.conduta}')">
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-[9px] font-black uppercase text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">${p.tipo}</span>
-                        <span class="text-gray-400 text-[10px]">Ver conduta ➔</span>
+                <div class="card-guia bg-white p-3.5 rounded-2xl border border-gray-200 cursor-pointer hover:border-amber-300 transition-all shadow-sm" onclick="abrirModal('${p.nome}', '${p.tipo}', '🔍 *Quadro:*\\n${p.quadro.replace(/\n/g, '\\n')}\\n\\n📋 *Conduta:*\\n${p.conduta.replace(/\n/g, '\\n')}')">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="text-[9px] font-black uppercase text-amber-800 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full">${p.tipo}</span>
+                        <span class="text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 border border-amber-100">
+                            Ver conduta ➔
+                        </span>
                     </div>
-                    <h4 class="text-xs font-bold text-gray-900">${p.nome}</h4>
-                    <p class="text-[11px] text-gray-500 line-clamp-2 mt-1">${p.quadro}</p>
+                    <h4 class="text-xs font-black text-gray-900">${p.nome}</h4>
+                    <p class="text-[11px] text-gray-500 line-clamp-2 mt-1 leading-relaxed">${p.quadro}</p>
                 </div>
             `).join('');
 
