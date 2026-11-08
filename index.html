@@ -14,17 +14,23 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
-</head>
-<body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col pb-16">
-
-    <!-- Topo Fixo com Busca Inteligente -->
-    <header class="bg-slate-900 text-white sticky top-0 z-50 p-3 shadow-md">
-        <div class="max-w-md mx-auto flex items-center justify-between mb-2">
-            <h1 class="text-sm font-black flex items-center gap-1.5"><span>📖</span> MedHub Guia Clínico</h1>
-            <span class="text-[10px] bg-indigo-900 border border-indigo-700 px-2 py-0.5 rounded-full font-bold">TMA-2</span>
+<!-- CABEÇALHO MASTER: ALTERNADOR DE GUIAS FIXO -->
+    <header class="bg-slate-900 text-white sticky top-0 z-50 shadow-md">
+        <div class="max-w-md mx-auto p-2.5 flex items-center justify-between border-b border-slate-800">
+            <h1 class="text-xs font-black flex items-center gap-1.5">
+                <span>🏥</span> MedHub Clínico
+            </h1>
+            <span class="text-[9px] bg-teal-500/20 text-teal-300 border border-teal-500/30 px-2 py-0.5 rounded-full font-bold">Base Completa</span>
         </div>
-        <div class="max-w-md mx-auto">
-            <input type="text" id="globalSearch" onkeyup="filtrarConteudo()" placeholder="🔍 Pesquisar em todo o guia (ex: Atropina, IAM, Asma)..." class="w-full py-2 px-3 bg-slate-800 text-white placeholder-gray-400 text-xs rounded-xl border border-slate-700 focus:outline-none focus:bg-white focus:text-gray-900 transition-all font-medium">
+        
+        <!-- SELETOR DAS 2 GUIAS PRINCIPAIS SEMPRE VISÍVEL -->
+        <div class="max-w-md mx-auto grid grid-cols-2 p-1.5 gap-1.5 bg-slate-950">
+            <button type="button" onclick="alternarApp('app-calc')" id="btn-master-calc" class="py-2 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1 bg-teal-600 text-white shadow">
+                <span>🧮</span> Calculadoras
+            </button>
+            <button type="button" onclick="alternarApp('app-guia')" id="btn-master-guia" class="py-2 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1 text-gray-400 hover:text-white">
+                <span>📖</span> Guia & Condutas
+            </button>
         </div>
     </header>
 
