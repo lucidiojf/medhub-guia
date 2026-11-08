@@ -525,6 +525,7 @@
         if (tg) { tg.ready(); tg.expand(); }
 
         let textoModalAtivo = "";
+        let guiaCarregado = false;
 
         // ALTERNADOR MASTER: TROCA ENTRE CALCULADORAS E GUIA
         function alternarApp(appId) {
@@ -546,6 +547,12 @@
                 elGuia.classList.remove('hidden');
                 btnCalc.className = "py-2 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1 text-gray-400 hover:text-white";
                 btnGuia.className = "py-2 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1 bg-indigo-600 text-white shadow";
+                
+                // Lazy loading do guia para performance ultra fluida
+                if (!guiaCarregado) {
+                    renderizarGuia();
+                    guiaCarregado = true;
+                }
                 mudarTabGuia('tab-fichas');
             }
         }
@@ -555,7 +562,8 @@
             document.querySelectorAll('.btn-calc').forEach(btn => {
                 btn.className = "btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-500 border border-transparent";
             });
-            document.getElementById(id).classList.remove('hidden');
+            const alvo = document.getElementById(id);
+            if (alvo) alvo.classList.remove('hidden');
             const target = document.getElementById(id.replace('tab-', 'btn-sub-'));
             if (target) target.className = "btn-calc shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-teal-50 text-teal-800 border-2 border-teal-500/20";
         }
@@ -565,7 +573,8 @@
             document.querySelectorAll('.btn-guia').forEach(btn => {
                 btn.className = "btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-400 border border-transparent";
             });
-            document.getElementById(id).classList.remove('hidden');
+            const alvo = document.getElementById(id);
+            if (alvo) alvo.classList.remove('hidden');
             const target = document.getElementById(id.replace('tab-', 'btn-guia-'));
             if (target) target.className = "btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border-2 border-rose-500/20";
         }
@@ -857,24 +866,13 @@
         }
 
         function compartilharCalc(tipo) {
-            let txt = `📊 *MEDHUB - ${tipo.toUpperCase()}*
-`;
-            if (tipo === 'Obstetrícia') txt += `• IG DUM: ${document.getElementById('ig-dum-txt').innerText}
-• IG USG: ${document.getElementById('ig-usg-txt').innerText}
-• DPP: ${document.getElementById('dpp-txt').innerText}`;
-            else if (tipo === 'Dieta') txt += `• IMC: ${document.getElementById('imc-val').innerText} (${document.getElementById('imc-class').innerText})
-• Meta Perda: ${document.getElementById('emagrecer-kcal').innerText}`;
-            else if (tipo === 'Escalas') txt += `• Glasgow: ${document.getElementById('total-glasgow').innerText} (${document.getElementById('desc-glasgow').innerText})
-• Apgar: ${document.getElementById('total-apgar').innerText} (${document.getElementById('desc-apgar').innerText})`;
-            else if (tipo === 'Lipidico') txt += `• LDL: ${document.getElementById('lip-ldl').innerText}
-• Não-HDL: ${document.getElementById('lip-naohdl').innerText}
-• Castelli I: ${document.getElementById('lip-c1').innerText}
-• Castelli II: ${document.getElementById('lip-c2').innerText}`;
-            else if (tipo === 'Pediatria') txt += `• Holliday Etapa (6h): ${document.getElementById('ped-etapa').innerText}
-• SG 5%: ${document.getElementById('ped-sg').innerText} | SF 0.9%: ${document.getElementById('ped-sf').innerText}
-• Gotejamento: ${document.getElementById('ped-gts').innerText}`;
-            else if (tipo === 'Alcool') txt += `• Taxa Atual: ${document.getElementById('alc-bacatual').innerText}
-• Situação: ${document.getElementById('alc-classe').innerText}`;
+            let txt = `📊 *MEDHUB - ${tipo.toUpperCase()}*\n`;
+            if (tipo === 'Obstetrícia') txt += `• IG DUM: ${document.getElementById('ig-dum-txt').innerText}\n• IG USG: ${document.getElementById('ig-usg-txt').innerText}\n• DPP: ${document.getElementById('dpp-txt').innerText}`;
+            else if (tipo === 'Dieta') txt += `• IMC: ${document.getElementById('imc-val').innerText} (${document.getElementById('imc-class').innerText})\n• Meta Perda: ${document.getElementById('emagrecer-kcal').innerText}`;
+            else if (tipo === 'Escalas') txt += `• Glasgow: ${document.getElementById('total-glasgow').innerText} (${document.getElementById('desc-glasgow').innerText})\n• Apgar: ${document.getElementById('total-apgar').innerText} (${document.getElementById('desc-apgar').innerText})`;
+            else if (tipo === 'Lipidico') txt += `• LDL: ${document.getElementById('lip-ldl').innerText}\n• Não-HDL: ${document.getElementById('lip-naohdl').innerText}\n• Castelli I: ${document.getElementById('lip-c1').innerText}\n• Castelli II: ${document.getElementById('lip-c2').innerText}`;
+            else if (tipo === 'Pediatria') txt += `• Holliday Etapa (6h): ${document.getElementById('ped-etapa').innerText}\n• SG 5%: ${document.getElementById('ped-sg').innerText} | SF 0.9%: ${document.getElementById('ped-sf').innerText}\n• Gotejamento: ${document.getElementById('ped-gts').innerText}`;
+            else if (tipo === 'Alcool') txt += `• Taxa Atual: ${document.getElementById('alc-bacatual').innerText}\n• Situação: ${document.getElementById('alc-classe').innerText}`;
             else if (tipo === 'Insulina') txt += `• Tabela Regular PSZO e NPH Basal calculadas no MedHub.`;
 
             if (navigator.clipboard) navigator.clipboard.writeText(txt);
@@ -965,119 +963,45 @@
         ];
 
         const peconhaData = [
-            { nome: "Bothrops (Jararaca, Urutu)", tipo: "Botrópico", quadro: "Ação Proteolítica, Coagulante e Hemorrágica. Dor, edema indurado e equimose locais. Bolhas necróticas e gengivorragia. Risco de choque e insuficiência renal aguda.", conduta: "Lavar local com água e sabão. Membro elevado. Analgesia.
-• Leve: 2 a 4 ampolas de Soro Antibotrópico (SAB) EV.
-• Moderado: 5 a 8 ampolas de SAB EV.
-• Grave: 12 ampolas de SAB EV." },
-            { nome: "Crotalus (Cascavel)", tipo: "Crotálico", quadro: "Ação Neurotóxica e Miotóxica. Edema local mínimo com parestesia. Fácies neurotóxica (ptose palpebral, diplopia), mialgia generalizada e urina escura cor de refrigerante de cola.", conduta: "Hidratação venosa vigorosa imediata (manter diurese clara >1-2 ml/kg/h).
-• Moderado: 10 ampolas de Soro Anticrotálico (SAC) EV.
-• Grave: 20 ampolas de SAC EV." },
-            { nome: "Lachesis (Surucucu Pico-de-Jaca)", tipo: "Laquético", quadro: "Ação Proteolítica, Coagulante, Hemorrágica e Neurotóxica Vagal. Dor e necrose extensas associadas a manifestações vagais intensas (bradicardia, hipotensão, diarreia profusa).", conduta: "Expansão volêmica vigorosa e combate ao choque.
-• Moderado: 10 ampolas de Soro Antilaquético (SAL) EV.
-• Grave: 20 ampolas de SAL EV." },
-            { nome: "Micrurus (Coral-Verdadeira)", tipo: "Elapídico", quadro: "Ação Neurotóxica pré e pós-sináptica. Sem sinais locais. Ptose palpebral, diplopia, salivação, paralisia de membros e parada respiratória por paralisia diafragmática.", conduta: "TODO CASO É CONSIDERADO GRAVE.
-• Soro Antielapídico (SAEl) EV: 10 ampolas.
-• Suporte ventilatório imediato (IOT).
-• Teste com Neostigmina + Atropina." },
-            { nome: "Escorpião (Tityus stigmurus / serrulatus)", tipo: "Escorpiões", quadro: "Leve: dor local intensa e queimação. Moderado/Grave (crianças): vômitos profusos, sudorese generalizada, sialorreia, hipertensão/hipotensão, edema pulmonar e choque.", conduta: "Bloqueio anestésico com Lidocaína 2% sem vasoconstritor.
-• Moderado: 2 a 4 ampolas de Soro Antiescorpiônico EV.
-• Grave: 4 a 6 ampolas de Soro Antiescorpiônico EV." },
-            { nome: "Aranha Marrom (Loxosceles sp.)", tipo: "Aranhas", quadro: "Picada pouco dolorosa. Após 12-24h: placa marmórea com necrose central. Forma cutâneo-visceral: hemólise intravascular maciça, icterícia e insuficiência renal aguda.", conduta: "Prednisona 0,5-1 mg/kg/dia, Dapsona 100 mg/dia.
-• Cutâneo Grave: 5 ampolas de Soro Antiloxoscélico / Antiaraquídico EV.
-• Cutâneo-Visceral: 10 ampolas de Soro EV." },
-            { nome: "Aranha Armadeira (Phoneutria nigriventer)", tipo: "Aranhas", quadro: "Dor lancinante imediata irradiando para o membro. Casos graves: agitação, sialorreia, priapismo, arritmias, edema agudo de pulmão e choque neurogênico.", conduta: "Infiltração anestésica com Lidocaína 2% sem vasoconstritor.
-• Moderado: 2 a 4 ampolas de Soro Antiaraquídico (SAA) EV.
-• Grave: 5 a 10 ampolas de SAA EV." },
+            { nome: "Bothrops (Jararaca, Urutu)", tipo: "Botrópico", quadro: "Ação Proteolítica, Coagulante e Hemorrágica. Dor, edema indurado e equimose locais. Bolhas necróticas e gengivorragia. Risco de choque e insuficiência renal aguda.", conduta: "Lavar local com água e sabão. Membro elevado. Analgesia.\n• Leve: 2 a 4 ampolas de Soro Antibotrópico (SAB) EV.\n• Moderado: 5 a 8 ampolas de SAB EV.\n• Grave: 12 ampolas de SAB EV." },
+            { nome: "Crotalus (Cascavel)", tipo: "Crotálico", quadro: "Ação Neurotóxica e Miotóxica. Edema local mínimo com parestesia. Fácies neurotóxica (ptose palpebral, diplopia), mialgia generalizada e urina escura cor de refrigerante de cola.", conduta: "Hidratação venosa vigorosa imediata (manter diurese clara >1-2 ml/kg/h).\n• Moderado: 10 ampolas de Soro Anticrotálico (SAC) EV.\n• Grave: 20 ampolas de SAC EV." },
+            { nome: "Lachesis (Surucucu Pico-de-Jaca)", tipo: "Laquético", quadro: "Ação Proteolítica, Coagulante, Hemorrágica e Neurotóxica Vagal. Dor e necrose extensas associadas a manifestações vagais intensas (bradicardia, hipotensão, diarreia profusa).", conduta: "Expansão volêmica vigorosa e combate ao choque.\n• Moderado: 10 ampolas de Soro Antilaquético (SAL) EV.\n• Grave: 20 ampolas de SAL EV." },
+            { nome: "Micrurus (Coral-Verdadeira)", tipo: "Elapídico", quadro: "Ação Neurotóxica pré e pós-sináptica. Sem sinais locais. Ptose palpebral, diplopia, salivação, paralisia de membros e parada respiratória por paralisia diafragmática.", conduta: "TODO CASO É CONSIDERADO GRAVE.\n• Soro Antielapídico (SAEl) EV: 10 ampolas.\n• Suporte ventilatório imediato (IOT).\n• Teste com Neostigmina + Atropina." },
+            { nome: "Escorpião (Tityus stigmurus / serrulatus)", tipo: "Escorpiões", quadro: "Leve: dor local intensa e queimação. Moderado/Grave (crianças): vômitos profusos, sudorese generalizada, sialorreia, hipertensão/hipotensão, edema pulmonar e choque.", conduta: "Bloqueio anestésico com Lidocaína 2% sem vasoconstritor.\n• Moderado: 2 a 4 ampolas de Soro Antiescorpiônico EV.\n• Grave: 4 a 6 ampolas de Soro Antiescorpiônico EV." },
+            { nome: "Aranha Marrom (Loxosceles sp.)", tipo: "Aranhas", quadro: "Picada pouco dolorosa. Após 12-24h: placa marmórea com necrose central. Forma cutâneo-visceral: hemólise intravascular maciça, icterícia e insuficiência renal aguda.", conduta: "Prednisona 0,5-1 mg/kg/dia, Dapsona 100 mg/dia.\n• Cutâneo Grave: 5 ampolas de Soro Antiloxoscélico / Antiaraquídico EV.\n• Cutâneo-Visceral: 10 ampolas de Soro EV." },
+            { nome: "Aranha Armadeira (Phoneutria nigriventer)", tipo: "Aranhas", quadro: "Dor lancinante imediata irradiando para o membro. Casos graves: agitação, sialorreia, priapismo, arritmias, edema agudo de pulmão e choque neurogênico.", conduta: "Infiltração anestésica com Lidocaína 2% sem vasoconstritor.\n• Moderado: 2 a 4 ampolas de Soro Antiaraquídico (SAA) EV.\n• Grave: 5 a 10 ampolas de SAA EV." },
             { nome: "Caravelas e Águas-Vivas (Cnidários)", tipo: "Marinhos", quadro: "Dor queimante imediata, lesões lineares urticariformes e bolhas. Risco de espasmos musculares sistêmicos e anafilaxia.", conduta: "NUNCA usar água doce. Lavar profusamente com ÁGUA DO MAR ou VINAGRE (Ácido Acético 5%) por 30 minutos contínuos. Retirar tentáculos com pinça." }
         ];
 
         const dmhasData = [
-            { titulo: "🩸 DIABETES MELLITUS: Etapas de Intensificação (1 a 4)", cat: "DM Terapêutica", txt: "• Etapa 1: NPH ou Lantus DU 0,2 U/kg/dia ao deitar + Orais. Se GJ > 180: aumentar 2-4U a cada 3 dias. Se hipoglicemia: reduzir 4U ou 10% da dose.
-• Etapa 2: Pico pós-prandial detectado: Associar NPH + Insulina Rápida (IR) no almoço.
-• Etapa 3: Pico em mais de uma refeição: Iniciar 2ª dose de NPH com 4U, depois aumentar 2U a cada 3 dias.
-• Etapa 4: Sem resposta: Progredir para 2 NPH + 3 IR (Opção: 3 doses de NPH)." },
-            { titulo: "🩸 DIABETES MELLITUS: Ajustes de Glicemia por HGT", cat: "DM Monitorização", txt: "• Rotina: HGTs em jejum, antes do almoço, antes do jantar e ao deitar.
-• GJ Aumentada Antes do Almoço: Adicionar Insulina Rápida (IR) antes do café da manhã.
-• GJ Aumentada Antes do Jantar: Adicionar NPH antes do café da manhã OU Insulina Rápida (IR) antes do almoço.
-• Controle Trimestral: Avaliar HbA1c a cada 3 meses. Se HbA1c > 7%, alterar o esquema terapêutico." },
-            { titulo: "🫀 HIPERTENSÃO ARTERIAL (HAS): Estratégia e Progressão (1 a 4)", cat: "HAS Estratégia", txt: "• Etapa 1: Grau 1 com baixo risco CV: monoterapia de 1ª linha. Grau 1 alto risco ou Graus 2/3: associação de 2 drogas de 1ª linha de classes diferentes.
-• Etapa 2: Aumentar doses até alvo da PA. Se refratário a duas drogas em dose máxima tolerada, associar 3ª classe de 1ª linha (Tiazídico + BCC + IECA/BRA).
-• Etapa 3: Se fora do alvo apesar de 3 drogas, adicionar Espironolactona (25 a 50 mg/dia) como 4ª droga.
-• Etapa 4: Hipertensão refratária com 4 drogas: adicionar sequencialmente drogas de 2ª linha.
-⚠️ Regra de Ouro: NUNCA associar IECA (Captopril/Enalapril) e BRA (Losartana/Valsartana)." },
-            { titulo: "🫀 HIPERTENSÃO ARTERIAL (HAS): Arsenal Terapêutico (Doses)", cat: "HAS Fármacos", txt: "Drogas de 1ª Linha:
-- Enalapril: 5-40 mg/dia VO (1-2x/dia)
-- Captopril: 25-150 mg/dia VO (2-3x/dia)
-- Losartana: 25-100 mg/dia VO (1-2x/dia)
-- Hidroclorotiazida: 12,5-25 mg VO 1x/dia
-- Anlodipino: 2,5-10 mg VO 1x/dia
-- Espironolactona: 25-200 mg/dia VO 1x/dia
-
-Drogas de 2ª Linha:
-- Atenolol: 25-100 mg/dia VO 12/12h
-- Carvedilol: 12,5-50 mg/dia VO 12/12h
-- Propranolol: 40-160 mg/dia VO até 6/6h (máx 640mg)
-- Hidralazina: 25-50 mg/dia VO de 8/8h
-- Furosemida: 20-80 mg/dia VO (de 12/12h até 6/6h)." },
-            { titulo: "🫀 HIPERTENSÃO ARTERIAL (HAS): Populações Especiais", cat: "HAS Populações", txt: "• Raça Negra: Tiazídicos e BCC (Anlodipino).
-• Idosos: Tiazídicos + Betabloqueadores; IECA; BRA; BCC.
-• Gestantes: Alfa Metildopa (1ª escolha), Hidralazina. Contraindicados IECA e BRA.
-• Diabetes Mellitus / Nefropatas: IECA e BRA (nefroproteção).
-• Pós-IAM: IECA e Betabloqueadores.
-• Pós-AVC Isquêmico: Tiazídicos, IECA e BRA.
-• IC Sistólica: IECA, BRA, Betabloqueadores, Espironolactona." },
-            { titulo: "🌿 TRATAMENTO NÃO MEDICAMENTOSO (HAS & DCV)", cat: "HAS Não-Med", txt: "• Perda de Peso: Manter IMC normal (entre 18,5-24,9 kg/m²).
-• Dieta: Rica em frutas e vegetais, baixo teor de gorduras saturadas.
-• Sódio: Restrição para ≤ 2 g/dia de sódio (6 g de sal/dia).
-• Atividade Física: Exercício aeróbico regular por pelo menos 30 min diários.
-• Álcool: Consumo moderado (<30 mL/dia de etanol).
-• Tabagismo: Cessação total." }
+            { titulo: "🩸 DIABETES MELLITUS: Etapas de Intensificação (1 a 4)", cat: "DM Terapêutica", txt: "• Etapa 1: NPH ou Lantus DU 0,2 U/kg/dia ao deitar + Orais. Se GJ > 180: aumentar 2-4U a cada 3 dias. Se hipoglicemia: reduzir 4U ou 10% da dose.\n• Etapa 2: Pico pós-prandial detectado: Associar NPH + Insulina Rápida (IR) no almoço.\n• Etapa 3: Pico em mais de uma refeição: Iniciar 2ª dose de NPH com 4U, depois aumentar 2U a cada 3 dias.\n• Etapa 4: Sem resposta: Progredir para 2 NPH + 3 IR (Opção: 3 doses de NPH)." },
+            { titulo: "🩸 DIABETES MELLITUS: Ajustes de Glicemia por HGT", cat: "DM Monitorização", txt: "• Rotina: HGTs em jejum, antes do almoço, antes do jantar e ao deitar.\n• GJ Aumentada Antes do Almoço: Adicionar Insulina Rápida (IR) antes do café da manhã.\n• GJ Aumentada Antes do Jantar: Adicionar NPH antes do café da manhã OU Insulina Rápida (IR) antes do almoço.\n• Controle Trimestral: Avaliar HbA1c a cada 3 meses. Se HbA1c > 7%, alterar o esquema terapêutico." },
+            { titulo: "🫀 HIPERTENSÃO ARTERIAL (HAS): Estratégia e Progressão (1 a 4)", cat: "HAS Estratégia", txt: "• Etapa 1: Grau 1 com baixo risco CV: monoterapia de 1ª linha. Grau 1 alto risco ou Graus 2/3: associação de 2 drogas de 1ª linha de classes diferentes.\n• Etapa 2: Aumentar doses até alvo da PA. Se refratário a duas drogas em dose máxima tolerada, associar 3ª classe de 1ª linha (Tiazídico + BCC + IECA/BRA).\n• Etapa 3: Se fora do alvo apesar de 3 drogas, adicionar Espironolactona (25 a 50 mg/dia) como 4ª droga.\n• Etapa 4: Hipertensão refratária com 4 drogas: adicionar sequencialmente drogas de 2ª linha.\n⚠️ Regra de Ouro: NUNCA associar IECA (Captopril/Enalapril) e BRA (Losartana/Valsartana)." },
+            { titulo: "🫀 HIPERTENSÃO ARTERIAL (HAS): Arsenal Terapêutico (Doses)", cat: "HAS Fármacos", txt: "Drogas de 1ª Linha:\n- Enalapril: 5-40 mg/dia VO (1-2x/dia)\n- Captopril: 25-150 mg/dia VO (2-3x/dia)\n- Losartana: 25-100 mg/dia VO (1-2x/dia)\n- Hidroclorotiazida: 12,5-25 mg VO 1x/dia\n- Anlodipino: 2,5-10 mg VO 1x/dia\n- Espironolactona: 25-200 mg/dia VO 1x/dia\n\nDrogas de 2ª Linha:\n- Atenolol: 25-100 mg/dia VO 12/12h\n- Carvedilol: 12,5-50 mg/dia VO 12/12h\n- Propranolol: 40-160 mg/dia VO até 6/6h (máx 640mg)\n- Hidralazina: 25-50 mg/dia VO de 8/8h\n- Furosemida: 20-80 mg/dia VO (de 12/12h até 6/6h)." },
+            { titulo: "🫀 HIPERTENSÃO ARTERIAL (HAS): Populações Especiais", cat: "HAS Populações", txt: "• Raça Negra: Tiazídicos e BCC (Anlodipino).\n• Idosos: Tiazídicos + Betabloqueadores; IECA; BRA; BCC.\n• Gestantes: Alfa Metildopa (1ª escolha), Hidralazina. Contraindicados IECA e BRA.\n• Diabetes Mellitus / Nefropatas: IECA e BRA (nefroproteção).\n• Pós-IAM: IECA e Betabloqueadores.\n• Pós-AVC Isquêmico: Tiazídicos, IECA e BRA.\n• IC Sistólica: IECA, BRA, Betabloqueadores, Espironolactona." },
+            { titulo: "🌿 TRATAMENTO NÃO MEDICAMENTOSO (HAS & DCV)", cat: "HAS Não-Med", txt: "• Perda de Peso: Manter IMC normal (entre 18,5-24,9 kg/m²).\n• Dieta: Rica em frutas e vegetais, baixo teor de gorduras saturadas.\n• Sódio: Restrição para ≤ 2 g/dia de sódio (6 g de sal/dia).\n• Atividade Física: Exercício aeróbico regular por pelo menos 30 min diários.\n• Álcool: Consumo moderado (<30 mL/dia de etanol).\n• Tabagismo: Cessação total." }
         ];
 
         const prescricoesData = [
-            { titulo: "Drogas de Urgência Injetáveis Pediátricas", cat: "Peds Urgência", txt: "- Decadron: Peso/20 IM ou Peso/25 IM
-- Dipirona (1000mg/2ml): Peso/20 IM
-- Ondansetrona: Peso/20 ml IM
-- Dramin/Bromoprida/Buscopan/Plasil: Peso/30 IM
-- Prometazina: Peso/50 ml IM
-- Adrenalina (PCR): 1 amp + 9ml ABD -> 0,1 ml/kg IV
-- Adrenalina (Anafilaxia): 0,01 ml/kg IM no vasto lateral (máx 0,3ml)
-- Diazepam (2ml/10mg): 0,04 ml/kg IV ou retal 0,06 ml/kg
-- Fenitoína (Hidantal): 0,3 ml/kg EV diluído em SF em 30 min" },
-            { titulo: "Hidratação Venosa Pediátrica (Fase Rápida e Manutenção)", cat: "Pediatria", txt: "1ª Fase (Rápida - 1h): SG 25ml/kg + SF 25ml/kg EV (16 gts/kg/min).
-2ª Fase (Lenta - 24h): Lactente = 150ml/kg/dia | Criança = 120ml/kg/dia.
-Solução: SG ¾ + SF ¼ + KCl 19,1% 1ml a cada 100ml. Dividir em 3 etapas de 8h." },
-            { titulo: "Terapia de Reidratação Oral (TRO)", cat: "Pediatria", txt: "Volume: 50 a 100 ml/kg de SRO em 4 a 6 horas.
-Cálculo Rápido nas 4h: Peso (kg) x 75 ml." },
-            { titulo: "Entero-Infecção Pediátrica", cat: "Pediatria", txt: "1. Dieta leve e HV
-2. Gentamicina: 7,5 mg/kg/dia em 24h em 100ml SF/SG correr em 60 min
-3. Ondansetron: (Peso/20) ml EV 8/8h SN
-4. Florax SM: 1 flac 12/12h
-5. Dipirona: (Peso/20) ml EV SN" },
-            { titulo: "Crise Asmática na Criança (Hospitalar e Domicílio)", cat: "Peds Urgência", txt: "NBZ: 5ml SF + Berotec 1gt/3kg + Atrovent (dobro Berotec) OU Salbutamol spray 4-8 jatos a cada 20 min por 1h.
-Prednisolona: 1-2 mg/kg dose única VO.
-Se sem VO: Dexametasona Peso/2 em ml IM DU ou Hidrocortisona 5 mg/kg EV 6/6h." },
-            { titulo: "Pneumonias Pediátricas", cat: "Pediatria", txt: "Ambulatorial: Amoxicilina 400/5ml (0,33 ml/kg 12/12h) por 7-10 dias.
-Hospitalar: Penicilina Cristalina 50.000 UI/kg 6/6h OU Ceftriaxona 50-100 mg/kg/dia EV 1x/dia." },
-            { titulo: "Cálculos Práticos de Ceftriaxona Pediátrica", cat: "Pediatria", txt: "Via IM: 1g + 1ml ABD + 1ml Lidocaína 2% -> aplicar dose calculada.
-Via IV: 1g + 3,5ml ABD -> fazer 0,18 ml/kg EV em 50-100ml SF em 30 min (1x/dia)." },
-            { titulo: "Crise Convulsiva / Emergência Epiléptica Pediátrica", cat: "Peds Urgência", txt: "1ª Linha: Diazepam 0,1 a 0,3 mg/kg EV lento (máx 3 doses) ou via retal 0,5 mg/kg.
-2ª Linha: Fenitoína (Hidantal) ataque 0,4 ml/kg diluído em SF em 30 min." },
-            { titulo: "Convulsões Febris", cat: "Peds Urgência", txt: "Via aérea pérvia, aspiração e O2. Puncionar acesso.
-Diazepam 0,2 a 0,4 mg/kg EV ou 0,5 mg/kg retal. Antitérmicos e investigar foco." },
+            { titulo: "Drogas de Urgência Injetáveis Pediátricas", cat: "Peds Urgência", txt: "- Decadron: Peso/20 IM ou Peso/25 IM\n- Dipirona (1000mg/2ml): Peso/20 IM\n- Ondansetrona: Peso/20 ml IM\n- Dramin/Bromoprida/Buscopan/Plasil: Peso/30 IM\n- Prometazina: Peso/50 ml IM\n- Adrenalina (PCR): 1 amp + 9ml ABD -> 0,1 ml/kg IV\n- Adrenalina (Anafilaxia): 0,01 ml/kg IM no vasto lateral (máx 0,3ml)\n- Diazepam (2ml/10mg): 0,04 ml/kg IV ou retal 0,06 ml/kg\n- Fenitoína (Hidantal): 0,3 ml/kg EV diluído em SF em 30 min" },
+            { titulo: "Hidratação Venosa Pediátrica (Fase Rápida e Manutenção)", cat: "Pediatria", txt: "1ª Fase (Rápida - 1h): SG 25ml/kg + SF 25ml/kg EV (16 gts/kg/min).\n2ª Fase (Lenta - 24h): Lactente = 150ml/kg/dia | Criança = 120ml/kg/dia.\nSolução: SG ¾ + SF ¼ + KCl 19,1% 1ml a cada 100ml. Dividir em 3 etapas de 8h." },
+            { titulo: "Terapia de Reidratação Oral (TRO)", cat: "Pediatria", txt: "Volume: 50 a 100 ml/kg de SRO em 4 a 6 horas.\nCálculo Rápido nas 4h: Peso (kg) x 75 ml." },
+            { titulo: "Entero-Infecção Pediátrica", cat: "Pediatria", txt: "1. Dieta leve e HV\n2. Gentamicina: 7,5 mg/kg/dia em 24h em 100ml SF/SG correr em 60 min\n3. Ondansetron: (Peso/20) ml EV 8/8h SN\n4. Florax SM: 1 flac 12/12h\n5. Dipirona: (Peso/20) ml EV SN" },
+            { titulo: "Crise Asmática na Criança (Hospitalar e Domicílio)", cat: "Peds Urgência", txt: "NBZ: 5ml SF + Berotec 1gt/3kg + Atrovent (dobro Berotec) OU Salbutamol spray 4-8 jatos a cada 20 min por 1h.\nPrednisolona: 1-2 mg/kg dose única VO.\nSe sem VO: Dexametasona Peso/2 em ml IM DU ou Hidrocortisona 5 mg/kg EV 6/6h." },
+            { titulo: "Pneumonias Pediátricas", cat: "Pediatria", txt: "Ambulatorial: Amoxicilina 400/5ml (0,33 ml/kg 12/12h) por 7-10 dias.\nHospitalar: Penicilina Cristalina 50.000 UI/kg 6/6h OU Ceftriaxona 50-100 mg/kg/dia EV 1x/dia." },
+            { titulo: "Cálculos Práticos de Ceftriaxona Pediátrica", cat: "Pediatria", txt: "Via IM: 1g + 1ml ABD + 1ml Lidocaína 2% -> aplicar dose calculada.\nVia IV: 1g + 3,5ml ABD -> fazer 0,18 ml/kg EV em 50-100ml SF em 30 min (1x/dia)." },
+            { titulo: "Crise Convulsiva / Emergência Epiléptica Pediátrica", cat: "Peds Urgência", txt: "1ª Linha: Diazepam 0,1 a 0,3 mg/kg EV lento (máx 3 doses) ou via retal 0,5 mg/kg.\n2ª Linha: Fenitoína (Hidantal) ataque 0,4 ml/kg diluído em SF em 30 min." },
+            { titulo: "Convulsões Febris", cat: "Peds Urgência", txt: "Via aérea pérvia, aspiração e O2. Puncionar acesso.\nDiazepam 0,2 a 0,4 mg/kg EV ou 0,5 mg/kg retal. Antitérmicos e investigar foco." },
             { titulo: "Otite Média Aguda (OMA)", cat: "Pediatria", txt: "Amoxicilina 90 mg/kg/dia ou 0,33 ml/kg 12/12h por 7 a 10 dias. Analgesia com Dipirona ou Ibuprofeno." },
             { titulo: "Faringoamigdalites Bacterianas", cat: "Pediatria", txt: "Benzetacil IM DU: 600.000 UI (< 27kg) | 1.200.000 UI (> 27kg) OU Amoxicilina 0,33 ml/kg 12/12h por 10 dias." },
             { titulo: "Bronquiolite Viral Aguda", cat: "Pediatria", txt: "HV de manutenção, lavagem nasal abundante com Salsep, suspender VO se FR > 60-70 ipm. Salbutamol spray de prova." },
-            { titulo: "Infecções do Trato Urinário (ITU Pediátrica)", cat: "Pediatria", txt: "Hospitalar: Ceftriaxona 50 mg/kg EV 1x/dia ou Gentamicina 7,5 mg/kg/dia EV.
-Ambulatorial: Sulfametoxazol+Trimetoprima (Peso/2 em ml) 12/12h por 7 dias." },
-            { titulo: "Constipação Intestinal e DRGE Pediátrica", cat: "Pediatria", txt: "Constipação: Glicerol supositório ou PEG-LAX 17,5g pó (0,4 g/kg/dia).
-DRGE: Domperidona 0,25 ml/kg/dose VO 3x/dia antes das refeições." },
+            { titulo: "Infecções do Trato Urinário (ITU Pediátrica)", cat: "Pediatria", txt: "Hospitalar: Ceftriaxona 50 mg/kg EV 1x/dia ou Gentamicina 7,5 mg/kg/dia EV.\nAmbulatorial: Sulfametoxazol+Trimetoprima (Peso/2 em ml) 12/12h por 7 dias." },
+            { titulo: "Constipação Intestinal e DRGE Pediátrica", cat: "Pediatria", txt: "Constipação: Glicerol supositório ou PEG-LAX 17,5g pó (0,4 g/kg/dia).\nDRGE: Domperidona 0,25 ml/kg/dose VO 3x/dia antes das refeições." },
             { titulo: "Nasofaringites Agudas (Resfriado Comum e Gripe)", cat: "Pediatria", txt: "Repouso, hidratação vigorosa, lavagem nasal com SF. Dipirona gotas (1 gt/2kg 6/6h) e antialérgico se coriza profusa." },
             { titulo: "Rinite Alérgica", cat: "Pediatria", txt: "Anti-histamínicos (Fexofenadina ou Desloratadina) + Lavagem nasal contínua com Salsep. Corticoide nasal se > 2 anos." },
             { titulo: "Aftas (Estomatite Aftosa Pediátrica)", cat: "Pediatria", txt: "Gingilone pomada bucal 3x/dia por 3 dias + Bismu-Jet 1-2 gotas nas lesões." },
             { titulo: "Anemia Ferropriva e Falta de Apetite", cat: "Pediatria", txt: "Sulfato Ferroso: 3 a 5 mg/kg/dia de ferro elementar por 4 meses. Petivit BC xarope para apetite." },
-            { titulo: "Dermatite Atópica, Assaduras e Impetigo", cat: "Pediatria", txt: "Assaduras: Óxido de zinco / Bepantol.
-Impetigo: Benzetacil IM DU + Mupirocina pomada 2x/dia." },
+            { titulo: "Dermatite Atópica, Assaduras e Impetigo", cat: "Pediatria", txt: "Assaduras: Óxido de zinco / Bepantol.\nImpetigo: Benzetacil IM DU + Mupirocina pomada 2x/dia." },
             { titulo: "Síndrome Coronariana Aguda - IAM (MONABECCH)", cat: "Cardio Urgência", txt: "Morfina 2-4mg EV SN | O2 se Sat<90% | Isordil 5mg SL | AAS 300mg mastigável | Betabloqueador | Clopidogrel 300mg VO | Estatina 40mg | Enoxaparina 1mg/kg SC 12/12h." },
             { titulo: "Edema Agudo de Pulmão (EAP)", cat: "Cardio Urgência", txt: "Cabeceira elevada, Furosemida 40-80mg EV bolus, Morfina 2-4mg EV, Nitrato SL/EV se PAS>100, VNI precoce." },
             { titulo: "Fibrilação Atrial (FA - Sem Instabilidade)", cat: "Cardio Urgência", txt: "Controle de FC: Metoprolol 50mg VO 12/12h ou Amiodarona 150mg EV em 10 min. Anticoagulação com Rivaroxabana." },
@@ -1153,29 +1077,17 @@ Impetigo: Benzetacil IM DU + Mupirocina pomada 2x/dia." },
                 const item = fichasTox[index];
                 titulo = item.nome;
                 cat = item.id;
-                corpo = `🚨 *Sintomas:* ${item.sin}
-
-🔬 *Exames:* ${item.ex}
-
-💉 *Conduta:* ${item.cond}`;
+                corpo = `🚨 *Sintomas:* ${item.sin}\n\n🔬 *Exames:* ${item.ex}\n\n💉 *Conduta:* ${item.cond}`;
             } else if (categoria === 'antidoto') {
                 const item = antidotosData[index];
                 titulo = item.nome;
                 cat = "ANTÍDOTO";
-                corpo = `📦 *Apresentação:* ${item.ap}
-
-🎯 *Indicação:* ${item.ind}
-
-💊 *Posologia:* ${item.dose}`;
+                corpo = `📦 *Apresentação:* ${item.ap}\n\n🎯 *Indicação:* ${item.ind}\n\n💊 *Posologia:* ${item.dose}`;
             } else if (categoria === 'peconha') {
                 const item = peconhaData[index];
                 titulo = item.nome;
                 cat = item.tipo;
-                corpo = `🔍 *Quadro Clínico:*
-${item.quadro}
-
-📋 *Conduta & Soroterapia:*
-${item.conduta}`;
+                corpo = `🔍 *Quadro Clínico:*\n${item.quadro}\n\n📋 *Conduta & Soroterapia:*\n${item.conduta}`;
             } else if (categoria === 'dmhas') {
                 const item = dmhasData[index];
                 titulo = item.titulo;
@@ -1190,9 +1102,7 @@ ${item.conduta}`;
 
             document.getElementById('modalCategory').innerText = cat;
             document.getElementById('modalBody').innerHTML = `<h3 class="text-sm font-black text-gray-900">${titulo}</h3><div class="text-gray-700 whitespace-pre-line mt-2">${corpo}</div>`;
-            textoModalAtivo = `📋 *${titulo}* (${cat})
-
-${corpo}`;
+            textoModalAtivo = `📋 *${titulo}* (${cat})\n\n${corpo}`;
             document.getElementById('btnEnviar').innerText = "📤 Enviar ao Telegram";
             document.getElementById('detailModal').classList.remove('hidden');
         }
@@ -1235,9 +1145,8 @@ ${corpo}`;
             calcAlcool();
             calcPed();
             calcularInsulinaCompleta();
-            renderizarGuia();
             
-            // Abre diretamente nas calculadoras
+            // Abre diretamente nas calculadoras de forma leve e rápida
             alternarApp('app-calc');
         });
     </script>
