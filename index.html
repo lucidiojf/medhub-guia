@@ -479,6 +479,7 @@
                 <button onclick="mudarTabGuia('tab-dmhas')" id="btn-guia-dmhas" class="btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-400 border border-transparent">🫀 DM & HAS</button>
                 <button onclick="mudarTabGuia('tab-presc')" id="btn-guia-presc" class="btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-400 border border-transparent">📋 Prescrições (42)</button>
                 <button onclick="mudarTabGuia('tab-prenatal')" id="btn-guia-prenatal" class="btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-400 border border-transparent">🤰 Pré-Natal (9)</button>
+                <button onclick="mudarTabGuia('tab-obstetricia')" id="btn-guia-obstetricia" class="btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-400 border border-transparent">🩺 Obstetrícia (31)</button>
                 <button onclick="mudarTabGuia('tab-puericultura')" id="btn-guia-puericultura" class="btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-400 border border-transparent">👶 Puericultura (10)</button>
                 <button onclick="mudarTabGuia('tab-profilaxias')" id="btn-guia-profilaxias" class="btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-400 border border-transparent">🔄 Profilaxias (7)</button>
                 <button onclick="mudarTabGuia('tab-mama')" id="btn-guia-mama" class="btn-guia shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-400 border border-transparent">🎀 Nódulo Mamário (6)</button>
@@ -505,6 +506,9 @@
             </section>
             <section id="tab-prenatal" class="sec-guia hidden space-y-3">
                 <div id="lista-prenatal" class="space-y-3"></div>
+            </section>
+            <section id="tab-obstetricia" class="sec-guia hidden space-y-3">
+                <div id="lista-obstetricia" class="space-y-3"></div>
             </section>
             <section id="tab-puericultura" class="sec-guia hidden space-y-3">
                 <div id="lista-puericultura" class="space-y-3"></div>
@@ -1138,6 +1142,359 @@
         ];
 
         // RENDERIZAÇÃO 100% SEGURA POR ÍNDICE
+
+        const obstetriciaData = [
+    {
+        "titulo": "Abortamento",
+        "cat": "1º Trimestre / Urgência",
+        "txt": "• Exames de Rotina: Confirmação ultrassonográfica, tipagem sanguínea, hemograma completo, exame anatomopatológico e citogenética (em abortamento de repetição).\n• Profilaxia Rh: Administrar imunoglobulina anti-Rh para todas as pacientes Rh- com parceiro Rh+ ou status desconhecido.\n\n1. Abortamento Retido:\n• Discutir riscos e benefícios da conduta expectante (usar analgésico S/N e oferecer opção de desistência).\n• Controle em 7 dias; após 15 dias sem eliminação, iniciar conduta ativa: Misoprostol 200 a 400 mcg via vaginal e internação para curetagem (CTG).\n\n2. Abortamento no 1º Trimestre:\n• Completo (eco endometrial < 20 mm, sem infecção/ectópica): retorno em 15 dias com dosagem de beta-hCG quantitativo (Negativo = alta; Positivo = nova USG e rediscussão).\n• Incompleto (eco endometrial ≥ 20 mm):\n  - Colo impérvio: Misoprostol (Prostokos) 400 mcg via vaginal -> após 4h, realizar AMIU ou CTG.\n  - Colo pérvio: Realizar AMIU ou CTG diretamente.\n\n3. Abortamento Tardio (12 a 20 semanas):\n• Misoprostol (Prostokos) 100 mcg via vaginal a cada 6h até eliminação do produto da concepção -> Curetagem (CTG).\n\n4. Abortamento Infectado:\n• Coletar material para cultura e antibiograma.\n• ATB IV: Ampicilina + Sulbactam 3 g IV 6/6h + Gentamicina 180 a 240 mg IV 1x/dia (Alternativa: Penicilina cristalina + Gentamicina + Metronidazol; se alergia a penicilina: Clindamicina + Gentamicina).\n• Esvaziamento (após 1h do início do ATB): Colo pérvio = AMIU/CTG; Colo impérvio = Misoprostol 200–400 mcg VV -> após 1h, AMIU/CTG.\n• Alta hospitalar: Amoxicilina + Clavulanato 500 mg a 1 g VO 8/8h por 7 dias.\n\n5. Abortamento Complicado:\n• Internação em UTI + discussão multidisciplinar (colpotomia, laparotomia, laparoscopia ou histerectomia total abdominal).",
+        "pdfs": [
+            {
+                "file": "Abortamento.pdf",
+                "label": "Abortamento"
+            }
+        ]
+    },
+    {
+        "titulo": "Diabetes Gestacional",
+        "cat": "Endócrino / Pré-Natal",
+        "txt": "Protocolo clínico completo de rastreamento, diagnóstico (TOTG 75g / glicemia de jejum), metas glicêmicas, insulinoterapia e seguimento obstétrico no Diabetes Mellitus Gestacional (DMG).\n\n📄 Clique no botão abaixo para abrir o fluxograma e protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Diabetes-Gestacional-DG.pdf",
+                "label": "Diabetes Gestacional DG"
+            }
+        ]
+    },
+    {
+        "titulo": "Eclâmpsia",
+        "cat": "Síndromes Hipertensivas",
+        "txt": "Protocolo de emergência obstétrica: estabilização materna, sulfato de magnésio (esquemas de Pritchard / Zuspan), controle pressórico agudo (hidralazina / nifedipino) e resolução da gestação.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Eclampsia.pdf",
+                "label": "Eclampsia"
+            }
+        ]
+    },
+    {
+        "titulo": "Gestação Gemelar",
+        "cat": "Alto Risco / Pré-Natal",
+        "txt": "Protocolo de seguimento pré-natal na gestação múltipla: corionicidade, rastreio ultrassonográfico seriado, prevenção de prematuridade e via/momento do parto.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Gestação-Gemelar.pdf",
+                "label": "Gestação Gemelar"
+            }
+        ]
+    },
+    {
+        "titulo": "Gestação Prolongada",
+        "cat": "Vitalidade / Parto",
+        "txt": "Protocolo de conduta na gestação pós-termo / prolongada (≥ 41 semanas): avaliação de vitalidade fetal, índice de líquido amniótico e indicações de indução do parto.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Gestação-Prolongada.pdf",
+                "label": "Gestação Prolongada"
+            }
+        ]
+    },
+    {
+        "titulo": "Gravidez Ectópica",
+        "cat": "1º Trimestre / Urgência",
+        "txt": "Protocolo diagnóstico (beta-hCG seriado + USG transvaginal) e terapêutico: conduta expectante, tratamento medicamentoso com Metotrexato (critérios de elegibilidade) e abordagem cirúrgica.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Gravidez-Ectópica.pdf",
+                "label": "Gravidez Ectópica"
+            }
+        ]
+    },
+    {
+        "titulo": "Hemorragia Pós-Parto",
+        "cat": "Emergência Obstétrica",
+        "txt": "Protocolo de manejo da HPP (4 Ts: Tônus, Trauma, Tecido, Trombina): uterotônicos (ocitocina, metilergometrina, misoprostol), ácido tranexâmico, balão de tamponamento intrauterino e pacote de hemorragia.\n\n📄 Abra o PDF principal ou a tabela de referência rápida nos botões abaixo.",
+        "pdfs": [
+            {
+                "file": "Hemorragia-Pós-Parto.pdf",
+                "label": "Hemorragia Pós Parto"
+            },
+            {
+                "file": "Screenshot_20260213-204635_Chrome.png",
+                "label": "Screenshot 20260213 204635 Chrome"
+            }
+        ]
+    },
+    {
+        "titulo": "Hemorragias do 3º Trimestre",
+        "cat": "Emergência Obstétrica",
+        "txt": "Diagnóstico diferencial e conduta imediata nas hemorragias da segunda metade da gestação: Placenta Prévia, Descolamento Prematuro de Placenta (DPP), Rotura Uterina e Vasa Prévia.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Hemorragias-do-3º-trimestre.pdf",
+                "label": "Hemorragias do 3º trimestre"
+            }
+        ]
+    },
+    {
+        "titulo": "Hiperêmeses Gravídica",
+        "cat": "Intercorrências Clínicas",
+        "txt": "Protocolo de avaliação hidroeletrolítica, reposição volêmica, tiamina (prevenção de encefalopatia de Wernicke), antieméticos escalonados e suporte nutricional.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Hiperêmese-Gravídica.pdf",
+                "label": "Hiperêmese Gravídica"
+            }
+        ]
+    },
+    {
+        "titulo": "Hipertensão na Gestação",
+        "cat": "Síndromes Hipertensivas",
+        "txt": "Classificação (HAC, Hipertensão Gestacional, Pré-eclâmpsia com e sem sinais de gravidade), anti-hipertensivos de manutenção (metildopa, nifedipino, hidralazina), sulfatação e momento do parto.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Hipertensão-na-Gestação.pdf",
+                "label": "Hipertensão na Gestação"
+            }
+        ]
+    },
+    {
+        "titulo": "Hipotensão Arterial",
+        "cat": "Intercorrências Clínicas",
+        "txt": "Avaliação etiológica e manejo hemodinâmico da hipotensão arterial materna durante a gestação, analgesia/anestesia obstétrica e puerpério.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Hipotensao-Arterial.pdf",
+                "label": "Hipotensao Arterial"
+            }
+        ]
+    },
+    {
+        "titulo": "Icterícia Neonatal",
+        "cat": "Neonatologia",
+        "txt": "Protocolo de avaliação da hiperbilirrubinemia neonatal (zonas de Kramer, bilirrubina total e frações, incompatibilidade ABO/Rh) e indicações de fototerapia e exsanguineotransfusão.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Icterícia-Neonatal.pdf",
+                "label": "Icterícia Neonatal"
+            }
+        ]
+    },
+    {
+        "titulo": "Indução do Parto",
+        "cat": "Assistência ao Parto",
+        "txt": "Avaliação do índice de Bishop, métodos de amadurecimento cervical (misoprostol vaginal, sonda de Foley) e condução com ocitocina endovenosa.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Indução-do-parto.pdf",
+                "label": "Indução do parto"
+            }
+        ]
+    },
+    {
+        "titulo": "Infecção Puerperal",
+        "cat": "Puerpério",
+        "txt": "Diagnóstico e antibioticoterapia da endometrite puerperal e infecções de sítio cirúrgico/episiotomia no pós-parto.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Infecção-puerperal.pdf",
+                "label": "Infecção puerperal"
+            }
+        ]
+    },
+    {
+        "titulo": "Infecção Urinária e Gestação",
+        "cat": "Infecções na Gestação",
+        "txt": "Conduta na bacteriúria assintomática, cistite aguda e pielonefrite na gestação: esquemas antimicrobianos seguros por trimestre, internação e quimioprofilaxia.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Infecção-Urinária-e-Gestação.pdf",
+                "label": "Infecção Urinária e Gestação"
+            }
+        ]
+    },
+    {
+        "titulo": "Mastite Puerperal",
+        "cat": "Puerpério / Aleitamento",
+        "txt": "Diferenciação entre ingurgitamento mamário, mastite lactacional e abscesso mamário; antibioticoterapia compatível com a amamentação e manejo da drenagem.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Mastite-puerperal.pdf",
+                "label": "Mastite puerperal"
+            }
+        ]
+    },
+    {
+        "titulo": "Molestia Trofoblástica Gestacional - DTG",
+        "cat": "1º Trimestre / Oncologia",
+        "txt": "Diagnóstico ultrassonográfico e laboratorial (beta-hCG), esvaziamento uterino por vácuo-aspiração, seguimento pós-molar e critérios para neoplasia trofoblástica gestacional.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Moléstia-Trofoblástica-Gestacional.pdf",
+                "label": "Moléstia Trofoblástica Gestacional"
+            }
+        ]
+    },
+    {
+        "titulo": "RCIU 1",
+        "cat": "Medicina Fetal",
+        "txt": "Parte 1 — Definição, classificação (precoce vs. tardia), rastreamento e investigação etiológica da Restrição do Crescimento Intrauterino (RCIU).\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Restrição-do-Crescimento-Intra-Uterino-RCIU-1.pdf",
+                "label": "Restrição do Crescimento Intra Uterino RCIU 1"
+            }
+        ]
+    },
+    {
+        "titulo": "RCIU 2",
+        "cat": "Medicina Fetal",
+        "txt": "Parte 2 — Vigilância fetal por Dopplervelocimetria (artéria umbilical, cerebral média, ducto venoso) e definição do momento ideal para interrupção da gestação.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Restrição-do-Crescimento-Intra-Uterino-RCIU.pdf",
+                "label": "Restrição do Crescimento Intra Uterino RCIU"
+            }
+        ]
+    },
+    {
+        "titulo": "Rotura Prematura das Membranas - RPM",
+        "cat": "Prematuridade / Infecção",
+        "txt": "Diagnóstico clínico e complementar da RPMO (pré-termo e a termo), corticoterapia antenatal, neuroproteção com sulfato de magnésio, antibioticoprofilaxia de latência e conduta resolutiva.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Rotura-Prematura-das-Membranas-RPM.pdf",
+                "label": "Rotura Prematura das Membranas RPM"
+            }
+        ]
+    },
+    {
+        "titulo": "Sindrome Antifosfolípide e Trombofilias",
+        "cat": "Hematologia / Alto Risco",
+        "txt": "Critérios diagnósticos clínicos e laboratoriais da SAF, indicações de investigação de trombofilias e esquemas de anticoagulação (AAS + Heparina de Baixo Peso Molecular).\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Síndrome-Antifosfolípide-SAF-e-Trombofilias.pdf",
+                "label": "Síndrome Antifosfolípide SAF e Trombofilias"
+            }
+        ]
+    },
+    {
+        "titulo": "Sifilis e Gestação",
+        "cat": "Infecções na Gestação",
+        "txt": "Estadiamento clínico, interpretação de testes treponêmicos e não treponêmicos (VDRL), esquema terapêutico com Penicilina G Benzatina, tratamento do parceiro e seguimento mensal.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Sífilis-e-Gestação.pdf",
+                "label": "Sífilis e Gestação"
+            }
+        ]
+    },
+    {
+        "titulo": "Sindrome HELLP",
+        "cat": "Síndromes Hipertensivas",
+        "txt": "Critérios laboratoriais (hemólise, elevação de transaminases e plaquetopenia), suporte transfusional, sulfato de magnésio e conduta obstétrica imediata.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Síndrome-HELLP.pdf",
+                "label": "Síndrome HELLP"
+            }
+        ]
+    },
+    {
+        "titulo": "Toxoplasmose e Gestação",
+        "cat": "Infecções na Gestação",
+        "txt": "Interpretação sorológica (IgG, IgM e teste de avidez de IgG), espiramicina vs. esquema tríplice (pirimetamina, sulfadiazina e ácido folínico) e investigação fetal.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Toxoplasmose-e-Gestação.pdf",
+                "label": "Toxoplasmose e Gestação"
+            }
+        ]
+    },
+    {
+        "titulo": "Anemias na Gravidez",
+        "cat": "Hematologia / Pré-Natal",
+        "txt": "Diagnóstico diferencial das anemias na gestação, reposição de ferro elementar oral e indicações de ferro parenteral (sacarato de hidróxido férrico IV).\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Anemias-na-gestação.1.pdf",
+                "label": "Anemias na gestação.1"
+            }
+        ]
+    },
+    {
+        "titulo": "Atendimento ao RN na SP",
+        "cat": "Neonatologia",
+        "txt": "Diretrizes de reanimação neonatal e assistência ao recém-nascido na sala de parto (clampeamento oportuno, passos iniciais, VPP, intubação e massagem cardíaca).\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Reanimação-Neonatal-e-Atendimento-ao-RN-na-Sala-de-Parto.pdf",
+                "label": "Reanimação Neonatal e Atendimento ao RN na Sala de Parto"
+            }
+        ]
+    },
+    {
+        "titulo": "Assistência ao Prematuro",
+        "cat": "Neonatologia",
+        "txt": "Rotinas de estabilização térmica, suporte respiratório, hidratação, nutrição e prevenção de complicações no recém-nascido pré-termo.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Rotinas-de-Assistência-ao-Prematuro.pdf",
+                "label": "Rotinas de Assistência ao Prematuro"
+            }
+        ]
+    },
+    {
+        "titulo": "TEV Protocolo",
+        "cat": "Tromboembolismo",
+        "txt": "Avaliação de escore de risco e protocolos de tromboprofilaxia farmacológica e mecânica em pacientes cirúrgicos e clínicos.\n\n📄 Abra os protocolos completos (Pacientes Cirúrgicos e Pacientes Clínicos) nos botões abaixo.",
+        "pdfs": [
+            {
+                "file": "Protocolo-de-TEV-Pacientes-Cirúrgicos.pdf",
+                "label": "Protocolo de TEV Pacientes Cirúrgicos"
+            },
+            {
+                "file": "Protocolo-de-TEV-Pacientes-Clínicos.pdf",
+                "label": "Protocolo de TEV Pacientes Clínicos"
+            }
+        ]
+    },
+    {
+        "titulo": "Antibioticoprofilaxia",
+        "cat": "Cirurgia / Profilaxia",
+        "txt": "Protocolo institucional de antibioticoprofilaxia cirúrgica: escolha do antimicrobiano, dose de indução, repique intraoperatório e duração.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "ITA40150.PC_.002-PROTOCOLO-DE-ANTIBIOTICOPROFILAXIA-CIRURGICA-002.pdf",
+                "label": "ITA40150.PC .002 PROTOCOLO DE ANTIBIOTICOPROFILAXIA CIRURGICA 002"
+            }
+        ]
+    },
+    {
+        "titulo": "Inibição de TP Prematuro",
+        "cat": "Prematuridade",
+        "txt": "Critérios de trabalho de parto prematuro (TPP), escolha de tocolíticos (nifedipino, atosibana, indometacina), corticoterapia para maturação pulmonar e neuroproteção fetal.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Inibição-do-Trabalho-de-Parto-Prematuro-TPP.pdf",
+                "label": "Inibição do Trabalho de Parto Prematuro TPP"
+            }
+        ]
+    },
+    {
+        "titulo": "Bronquiolite",
+        "cat": "Pediatria / Respiratório",
+        "txt": "Avaliação de gravidade, suporte ventilatório/oxigenoterapia, hidratação e critérios de internação na bronquiolite viral aguda.\n\n📄 Clique no botão abaixo para abrir o protocolo completo em PDF.",
+        "pdfs": [
+            {
+                "file": "Bronquiolite.pdf",
+                "label": "Bronquiolite"
+            }
+        ]
+    }
+];
+
         function renderizarGuia() {
             document.getElementById('lista-fichas').innerHTML = fichasTox.map((f, i) => `
                 <div class="card-guia bg-white p-3.5 rounded-2xl border border-gray-200 cursor-pointer hover:border-rose-300 transition-all shadow-sm" onclick="abrirModalPorIndice('ficha', ${i})">
@@ -1210,6 +1567,20 @@
                 </div>
             `).join('');
 
+            document.getElementById('lista-obstetricia').innerHTML = obstetriciaData.map((ob, i) => `
+                <div class="card-guia bg-white p-4 rounded-2xl border border-fuchsia-100 shadow-sm cursor-pointer hover:border-fuchsia-300 transition-all" onclick="abrirModalPorIndice('obstetricia', ${i})">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <div class="flex items-center gap-1">
+                            <span class="text-[9px] font-black uppercase text-fuchsia-700 bg-fuchsia-50 px-2 py-0.5 rounded-full">${ob.cat}</span>
+                            ${ob.pdfs && ob.pdfs.length ? `<span class="text-[9px] font-bold text-rose-800 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded-full">📄 ${ob.pdfs.length > 1 ? ob.pdfs.length + ' PDFs' : 'PDF'}</span>` : ''}
+                        </div>
+                        <span class="text-fuchsia-700 bg-fuchsia-50 border border-fuchsia-100 text-[10px] font-bold px-2 py-0.5 rounded-full">Abrir ➔</span>
+                    </div>
+                    <h4 class="text-xs font-bold text-gray-900">${ob.titulo}</h4>
+                    <p class="text-[11px] text-gray-500 line-clamp-2 mt-1 whitespace-pre-line">${ob.txt}</p>
+                </div>
+            `).join('');
+
             document.getElementById('lista-puericultura').innerHTML = puericulturaData.map((pu, i) => `
                 <div class="card-guia bg-white p-4 rounded-2xl border border-cyan-100 shadow-sm cursor-pointer hover:border-cyan-300 transition-all" onclick="abrirModalPorIndice('puericultura', ${i})">
                     <div class="flex justify-between items-center mb-1.5">
@@ -1278,7 +1649,7 @@
         }
 
         function abrirModalPorIndice(categoria, index) {
-            let titulo = "", cat = "", corpo = "", imgs = [];
+            let titulo = "", cat = "", corpo = "", imgs = [], pdfs = [];
 
             if (categoria === 'ficha') {
                 const item = fichasTox[index];
@@ -1311,6 +1682,12 @@
                 titulo = item.titulo;
                 cat = item.cat;
                 corpo = item.txt;
+            } else if (categoria === 'obstetricia') {
+                const item = obstetriciaData[index];
+                titulo = item.titulo;
+                cat = item.cat;
+                corpo = item.txt;
+                pdfs = item.pdfs || [];
             } else if (categoria === 'puericultura') {
                 const item = puericulturaData[index];
                 titulo = item.titulo;
@@ -1353,11 +1730,37 @@
                     `</div>`;
             }
 
+            let pdfsHtml = "";
+            if (pdfs.length > 0) {
+                pdfsHtml = `<div class="space-y-2 pt-3 mt-3 border-t border-gray-100">` +
+                    pdfs.map(p => {
+                        const encodedUrl = encodeURI(p.file);
+                        const isPng = p.file.toLowerCase().endsWith('.png');
+                        return `
+                            <a href="${encodedUrl}" target="_blank" rel="noopener noreferrer" onclick="abrirLinkExterno(event, '${encodedUrl}')" class="w-full py-2.5 px-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs flex items-center justify-between shadow-sm transition-all">
+                                <span class="flex items-center gap-1.5"><span>${isPng ? '🖼️' : '📄'}</span> ${p.label}</span>
+                                <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-lg">Abrir ${isPng ? 'Imagem' : 'PDF'} ↗</span>
+                            </a>
+                            ${isPng ? `<div class="rounded-2xl overflow-hidden border border-gray-200 bg-gray-50 mt-2"><img src="${encodedUrl}" alt="${p.label}" onclick="abrirZoomImagem(this.src)" class="w-full h-auto object-contain cursor-zoom-in"><span class="block text-[9px] text-center text-gray-400 py-1 bg-white">🔍 Toque na imagem para ampliar</span></div>` : ''}
+                        `;
+                    }).join('') +
+                    `</div>`;
+            }
+
             document.getElementById('modalCategory').innerText = cat;
-            document.getElementById('modalBody').innerHTML = `<h3 class="text-sm font-black text-gray-900">${titulo}</h3><div class="text-gray-700 whitespace-pre-line mt-2">${corpo}</div>${imgsHtml}`;
+            document.getElementById('modalBody').innerHTML = `<h3 class="text-sm font-black text-gray-900">${titulo}</h3><div class="text-gray-700 whitespace-pre-line mt-2">${corpo}</div>${imgsHtml}${pdfsHtml}`;
             textoModalAtivo = `📋 *${titulo}* (${cat})\n\n${corpo}`;
             document.getElementById('btnEnviar').innerText = "📤 Enviar ao Telegram";
             document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+
+        function abrirLinkExterno(e, relPath) {
+            const fullUrl = new URL(relPath, window.location.href).href;
+            if (tg && typeof tg.openLink === 'function') {
+                e.preventDefault();
+                tg.openLink(fullUrl);
+            }
         }
 
         function abrirZoomImagem(src) {
